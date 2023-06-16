@@ -13,3 +13,64 @@ For those students who may not be familiar with writing critical summaries, here
 
 Isaac - Odd #s
 Connor - Even #s
+
+# Reading List Critical Summary (Group 1)
+
+## [PBKDF2 NIST Publication](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf)
+
+Main objectives/Research questions/Problems addressed:
+- Low entropy and (sometimes) poor randomness of passwords, they are not suitable to be directly used as cryptographic keys
+- Article specifies a family of password-based key derivation functions (PBKDFs) to derive better cryptographic keys from passwords
+
+Key Ideas:
+- To obtain a high-entropy master key for encryption purposes, combine a user password with a salt through a KDF
+- The salt must be at least 128 bits
+- Instead of HMAC-ing password+salt once, perform many iterations of HMAC using the result of the previous iteration
+
+Strengths:
+- From NIST (National Institute of Standards and Technology), very reputable source
+- Easily scales with newer, more powerful hardware
+- Easily adjustable to work on platforms of varying capability
+
+Weaknesses:
+- Overall security of the specified algorithm depends on either sufficiently random inputs, or sufficiently high iteration count. Higher iteration count => slower key generation, which may not be suitable for all applications
+
+## [Keccack Implementation Overview](https://keccak.team/files/Keccak-implementation-3.2.pdf)
+
+Main objectives/Research questions/Problems addressed:
+
+Key Ideas:
+
+Strengths:
+
+Weaknesses:
+
+## [Time-based OTP authentication via secure tunnel (TOAST): A mobile TOTP scheme using TLS seed exchange and encrypted offline keystore](https://ieeexplore.ieee.org/abstract/document/6920371)
+
+Main objectives/Research questions/Problems addressed:
+
+Key Ideas:
+
+Strengths:
+
+Weaknesses:
+
+## [Curve25519: New Diffie-Hellmen Speed Records](https://link.springer.com/chapter/10.1007/11745853_14)
+
+Main objectives/Research questions/Problems addressed:
+
+Key Ideas:
+
+Strengths:
+
+Weaknesses:
+
+## [Persistence of Passwords in Bitwarden’s Browser Extension: Unnecessary Retention and Solutions](https://passcert-project.github.io/publication/2022/rafael-prates-thesis/2022_IST_MSc_Thesis_RafaelPrates.pdf)
+
+Main objectives/Research questions/Problems addressed:
+
+Key Ideas:
+
+Strengths:
+
+Weaknesses:
