@@ -1,13 +1,25 @@
-# Placeholder
 
+# COMP 3340 Passman
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus facilisis finibus nibh in congue. Integer varius rutrum lorem in accumsan. Ut id tincidunt elit, mattis hendrerit tellus. Cras dictum purus ut faucibus elementum. Pellentesque non orci justo. Donec id semper turpis. Quisque urna elit, consequat vitae posuere ut, vestibulum vel arcu. Ut ac gravida nisl, sit amet convallis nunc.
+This repository is the working tree of Connor Horman and Isaac Kilbourne's (Group 1) password manager for COMP 3340.
 
-Integer vitae risus vitae ipsum semper lacinia. Donec sed tortor sit amet nulla elementum dapibus et ut lacus. Vestibulum ultrices aliquam eros vel feugiat. Nunc fermentum enim mattis, tristique ipsum id, sodales metus. Nam eu felis dapibus, varius metus ut, placerat odio. Pellentesque risus ante, accumsan quis augue vitae, tempor posuere odio. Praesent eleifend, arcu a pretium euismod, augue ex tincidunt est, et ultricies risus metus sit amet dolor. Phasellus posuere turpis dolor, facilisis interdum quam convallis vel. Nullam et orci ut purus molestie semper. Sed a aliquet felis, in condimentum ante. Aliquam eleifend lorem eu tortor scelerisque, at aliquam tortor suscipit. Maecenas felis leo, pellentesque id dictum vitae, bibendum id ligula. In viverra ipsum risus, ut accumsan dui mollis volutpat. Morbi dictum, lacus ut semper facilisis, arcu libero egestas diam, at luctus ex ligula at tortor. Nullam laoreet rutrum pellentesque.
+## Part 1 - Reading List
 
-Pellentesque gravida, eros et pulvinar molestie, quam justo dapibus lacus, at fermentum nunc leo non massa. Vivamus fermentum massa ut molestie semper. Ut dapibus tellus in velit vehicula eleifend. Fusce aliquam justo ac egestas viverra. Donec fermentum, nibh ut suscipit rhoncus, libero leo bibendum ligula, eu tristique quam dui viverra lacus. Pellentesque aliquam posuere ante, consectetur rutrum est maximus non. Quisque cursus euismod augue id sodales. Vestibulum mollis pretium felis sit amet facilisis. Cras vitae lorem libero. Proin luctus venenatis laoreet. Aliquam ut ante vitae dolor facilisis pellentesque vitae sit amet lacus. Ut porta in purus et interdum. Suspendisse potenti.
+The first part of the project is to find at least 10 reputable publications that will inform our design and implementation decisions.
 
-Proin blandit ullamcorper elit nec commodo. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nam at ultrices velit. Proin porttitor, leo et varius placerat, magna arcu elementum ex, nec ultricies risus urna et nisl. Sed posuere purus sem, eget ultrices mi semper id. Donec nec rutrum nisi. Etiam ornare, purus in dictum fermentum, diam urna aliquet ante, sit amet fringilla metus enim vitae ipsum. Praesent pellentesque elit magna.
+The following publications were chosen, in no particular order:
 
-In auctor sapien sapien, a commodo erat pulvinar id. Donec nec fringilla velit. Maecenas vitae feugiat orci. Ut sed tincidunt orci. Cras a leo non lectus molestie bibendum. Nulla a est gravida, egestas libero non, consectetur leo. Praesent tempor purus vitae tortor aliquet, et eleifend metus laoreet. Donec dapibus maximus sapien sed lacinia. Cras finibus pulvinar purus, in egestas erat laoreet eget. Donec pharetra est a magna mollis, consequat lobortis urna fringilla. Integer posuere nulla vel suscipit feugiat. Donec sit amet diam eu nulla efficitur mollis eget ac dolor.
+1. [PBKDF2 NIST Publication](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf)
+2. [1Password Whitepaper](https://1passwordstatic.com/files/security/1password-white-paper.pdf)
+3. [Keccack Implementation Overview](https://keccak.team/files/Keccak-implementation-3.2.pdf)
+4. [Security Analysis of Password Managers](https://www.usenix.org/system/files/conference/usenixsecurity14/sec14-paper-li-zhiwei.pdf)
+5. [Time-based OTP authentication via secure tunnel (TOAST): A mobile TOTP scheme using TLS seed exchange and encrypted offline keystore](https://ieeexplore.ieee.org/abstract/document/6920371)
+6. [Announcing the Advanced Encryption Standard](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf)
+7. [Curve25519: New Diffie-Hellmen Speed Records](https://link.springer.com/chapter/10.1007/11745853_14)
+8. [Web API Verification: Results and Challenges](http://static.cs.brown.edu/~sk/Publications/Papers/Published/glpk-web-api-verif-short/paper.pdf)
+9. [Persistence of Passwords in Bitwarden’s Browser Extension: Unnecessary Retention and Solutions](https://passcert-project.github.io/publication/2022/rafael-prates-thesis/2022_IST_MSc_Thesis_RafaelPrates.pdf)
+10. [UC-339 Cybersecurity Analysis of Password Managers](https://digitalcommons.kennesaw.edu/cday/Spring_2023/Undergraduate_Capstone/10/ )
 
+## Part 2 - Critical Summary
+
+See [Critical Summary.md](./Critical%20Summary.md)
