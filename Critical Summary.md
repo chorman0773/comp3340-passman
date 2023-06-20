@@ -38,10 +38,16 @@ Weaknesses:
 ## [Keccack Implementation Overview](https://keccak.team/files/Keccak-implementation-3.2.pdf)
 
 Main objectives/Research questions/Problems addressed:
+- Provide an overview of the `Keccak` family of algorithms, which underly cryptographic algorithms such as SHA-3.
 
 Key Ideas:
+- The key ideas of the paper are primarily the optimization methods depending on software and hardware conditionss
 
 Strengths:
+- Built on the sponge design, allowing any arbitrary-length input to be digested to a fixed- and chooseable output length
+- Fast to compute, on par with SHA-256
+- Constant memory usage, with no feed-forward loop
+- A variety of implementation techniques are discussed, allowing optimization on many common instruction sets
 
 Weaknesses:
 
