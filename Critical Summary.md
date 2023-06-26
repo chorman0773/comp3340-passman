@@ -1,26 +1,10 @@
-# Instructions
-
-Please submit a critical summary, contribution, or evaluation of 200-300 words for each paper. In your summary, provide a concise overview of the key points discussed in each paper. Explain the main findings, methodologies used, and any significant insights or recommendations provided by the authors.
-
-For those students who may not be familiar with writing critical summaries, here are some guidelines to help you:
-
-- Start by reading each paper carefully. Identify the main objectives, research questions, or problems addressed by the authors.
-- Summarize the key ideas and arguments presented in each paper. Focus on the main findings or outcomes of the research.
-- Provide a brief explanation of how each paper relates to your own project. Highlight any similarities or differences between the authors' work and your own goals or objectives.
-- Consider the strengths and weaknesses of each paper. Are there any limitations in the methodology or scope of the research? Are there areas that could have been explored further?
-- Reflect on the significance of each paper to the broader field of study. Does it contribute new insights or offer valuable recommendations? Discuss the potential impact or implications of the findings.
-- Use clear and concise language in your summaries. Avoid excessive technical jargon and ensure that your writing is accessible to readers who may not have a deep background in the subject matter.
-
-Isaac - Odd #s
-Connor - Even #s
-
 # Reading List Critical Summary (Group 1)
 
 ## [1Password White Paper](https://1passwordstatic.com/files/security/1password-white-paper.pdf)
 
 [The article](https://1passwordstatic.com/files/security/1password-white-paper.pdf) describes the design and security features of 1Password, a commercial password manager that is considered to be the most secure on the market, and describes the reasons for varying design features. 
 The primary objectives of the paper are to inform users of the secure features of 1Password, allowing those users to verify the security, and cryptoanalysists and penetration testers to attempt to find potential vulnerabilities, which allows them to be disclosed and fixed quicker, minimizing the time they could be weaponized by malicious programmers. 
-The article describes design features for a password manager that is well-regarded s secure, and is market-relevant to the proper design of a password manager, and thus is directly useful to the project, as it defines a project that is competing, thus giving us insight into best practices in the industry and allows us to weigh divergences against the potential to introduce vulnerabilities. 
+The article describes design features for a password manager that is well-regarded as secure, and is market-relevant to the proper design of a password manager, and thus is directly useful to the project, as it defines a project that is competing, thus giving us insight into best practices in the industry and allows us to weigh divergences against the potential to introduce vulnerabilities. 
 
 Strengths of the article include the Secure by design features and public security model, to allow non-malicious security researchers to analyze the security features and allow users to verify the security of the design; the properly end-to-end encrypted data storage, which avoids the ability for 1Password to decrypt, either accidentally or maliciously, or to leak the decryptiond etails; the Zero-knowledge proof authentication model, which precludes an attacker eavesdropping on the authentication channel from discovering the authentication details; and the key derivation process, which allows the generation of the decryption key separate from the authentication proof.
 
