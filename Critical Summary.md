@@ -16,7 +16,7 @@ Connor - Even #s
 
 # Reading List Critical Summary (Group 1)
 
-## 1Password White Paper
+## [1Password White Paper](https://1passwordstatic.com/files/security/1password-white-paper.pdf)
 
 [The article](https://1passwordstatic.com/files/security/1password-white-paper.pdf) describes the design and security features of 1Password, a commercial password manager that is considered to be the most secure on the market, and describes the reasons for varying design features. 
 The primary objectives of the paper are to inform users of the secure features of 1Password, allowing those users to verify the security, and cryptoanalysists and penetration testers to attempt to find potential vulnerabilities, which allows them to be disclosed and fixed quicker, minimizing the time they could be weaponized by malicious programmers. 
@@ -28,7 +28,7 @@ Weaknesses of the article include the single vault key model which requires a si
 
 In conclusion, the article descibes a number of design features that any password manager, including our project, can learn from and consider using to ensure proper security of each user's secret data, avoiding malicious attempts to gain it both from external attackers and from the server that operates the password manager.
 
-## Security Analysis of Password Managers
+## [Security Analysis of Password Managers](https://www.usenix.org/system/files/conference/usenixsecurity14/sec14-paper-li-zhiwei.pdf)
 
 [This article](https://www.usenix.org/system/files/conference/usenixsecurity14/sec14-paper-li-zhiwei.pdf) describes a security analysis of various web-based password managers, of which our project qualifies. In particular, it analyzes 5 different password managers, with varying degrees of security, and lack thereof, from the perspective of an attacker who may attempt to gain access to stored credentials from the server. This gives our project information on design features that are insufficient to properly protect user information.
 
@@ -38,7 +38,7 @@ Weakenesses of the article include the limited sample set, only looking at 5 pas
 
 In conclusion, though a significant bias towards the LastPass password manager is apparent, the paper still offers some valuable insight into design of secure password managers, particularily those which are primarily web-based. However it should not be used exclusively, and other papers on secure design should be used to fully inform any project, which our project does. 
 
-## Announcing the Advanced Encryption Standard
+## [Announcing the Advanced Encryption Standard](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf)
 
 [This article](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197-upd1.pdf) describes the Advanced Encryption Standard, a symmetric key-based block cipher algorithm, based on the Rijndael algorithm, and recognized by the US National Institute of Standards and Technology as a Federal Information Processing Standard. The algorithm is intended for use as the primary symmetric cipher algorithm for both the encrypted communication tunnel and for securing items stored by the user, and thus directly relevant to the design considerations of our project.
 
@@ -48,7 +48,7 @@ Weaknesses of the article include the use of a substitution box in the cipher, f
 
 In conclusion, the Advanced Encryption Standard is a well-known and well-regarded symmetric cipher algorithm, and is most likely the algorithm of choice for our project when a symmetric cipher is required or otherwise used. 
 
-## Web API Verification: Results and Challenges
+## [Web API Verification: Results and Challenges](http://static.cs.brown.edu/~sk/Publications/Papers/Published/glpk-web-api-verif-short/paper.pdf)
 
 [This article](http://static.cs.brown.edu/~sk/Publications/Papers/Published/glpk-web-api-verif-short/paper.pdf) describes methods for verifying a Web API provided for websites against security vulnerabilities. Browser APIs and Web APIs defined by W3C are used by our project to communicate with the server, to perform cryptographic operations on data, and to generate random keys, and thus the security of our project depends on the security of these apis. Additionally, the security of extension apis is useful for future designs expanding our project to include browser extensions.
 
@@ -58,7 +58,7 @@ The Weaknesses of the paper include a lack of description of particular attempts
 
 In conclusion, a rigourous verification of common implementations of the APIs used by our project is likely to be useful, particularily as to cryptographic and security-related APIs, but is a significant undertaking that will likely be left to future work. 
 
-## UC-339 Cybersecurity Analysis of Password Managers
+## [UC-339 Cybersecurity Analysis of Password Managers](https://digitalcommons.kennesaw.edu/cday/Spring_2023/Undergraduate_Capstone/10/)
 
 [This article](https://digitalcommons.kennesaw.edu/cday/Spring_2023/Undergraduate_Capstone/10/) describes further Cybersecurity Analysis on 3 different password managers. Similar to our sixth paper, it performs analytics on various password manager designs, which is useful for our project to find points of vulnerability that it is useful to avoid.
 
