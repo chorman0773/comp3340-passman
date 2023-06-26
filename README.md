@@ -18,7 +18,7 @@ The following publications were chosen, in no particular order:
 7. [Curve25519: New Diffie-Hellmen Speed Records](https://link.springer.com/chapter/10.1007/11745853_14)
 8. [Web API Verification: Results and Challenges](http://static.cs.brown.edu/~sk/Publications/Papers/Published/glpk-web-api-verif-short/paper.pdf)
 9. [Persistence of Passwords in Bitwarden’s Browser Extension: Unnecessary Retention and Solutions](https://passcert-project.github.io/publication/2022/rafael-prates-thesis/2022_IST_MSc_Thesis_RafaelPrates.pdf)
-10. [UC-339 Cybersecurity Analysis of Password Managers](https://digitalcommons.kennesaw.edu/cday/Spring_2023/Undergraduate_Capstone/10/ )
+10. [UC-339 Cybersecurity Analysis of Password Managers](https://digitalcommons.kennesaw.edu/cday/Spring_2023/Undergraduate_Capstone/10/)
 
 ## Part 2 - Critical Summary
 
