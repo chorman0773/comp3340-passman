@@ -33,10 +33,10 @@ The client SHOULD set the Accept header to the apprpriate type (or types) it req
 
 The content types specified for use with this protocol are as follows:
 1. application/x-bincode-object: An object specified in Bincode format, given by the appropriate Rust Structure for the request or response.
-2. application/json: An object specifed in json format, where structures are composed of objects where keys are field names and values are the value assigned, byte arrays are composed of base64 encoded strings, and enums are encoded as the name of the enumerator. Complex enums are an object with a field called `t` giving the name of the enumerator, and the remaining fields are given by name. A lone field of a tuple variant is given with the field called `v`.
+2. application/json: An object specifed in json format, where structures are composed of objects where keys are field names and values are the value assigned, byte arrays/vectors are composed of base64 encoded strings, and enums are encoded as the name of the enumerator. Complex enums are an object with a field called `t` giving the name of the enumerator, and the remaining fields are given by name. A lone field of a tuple variant is given with the field called `v`.
 
 
-
+Base64 encoded values are encoded without padding, however server's MUST accept base64 encoding that includes tail padding, and such values MUST be treated identically to the version without padding.
 
 ## Errors
 
