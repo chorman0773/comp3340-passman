@@ -13,6 +13,13 @@
       window.location.pathname = "/home";
     }
   };
+
+  let formError = false;
+
+  const onError = async () => {
+    formError = true;
+    console.log("error!");
+  };
 </script>
 
 <svelte:head>

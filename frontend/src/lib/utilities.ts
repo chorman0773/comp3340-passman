@@ -8,20 +8,20 @@ export const base64DecodeUint8Array = (b64String: string): Uint8Array => {
   );
 };
 
-export const getLocalStorageJsonValue = <T>(key: string): Maybe<T> => {
+export const getLocalStorageJsonValue = <T>(key: string): T | null => {
   if (!browser) {
     throw "getLocalStorageJsonValue can only be used in browser environments";
   }
 
   const storedValue = window.localStorage.getItem(key);
   if (!storedValue) {
-    return undefined;
+    return null;
   }
 
-  return JSON.parse(storedValue) as Maybe<T>;
+  return JSON.parse(storedValue) as T | null;
 };
 
-export const setLocalStorageJsonValue = <T>(key: string, value: Maybe<T>) => {
+export const setLocalStorageJsonValue = <T>(key: string, value: T | null) => {
   if (!browser) {
     throw "setLocalStorageJsonValue can only be used in browser environments";
   }

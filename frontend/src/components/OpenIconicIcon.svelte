@@ -241,4 +241,4 @@
     | "zoom-out";
 </script>
 
-<span class="oi" data-glyph={name} title={name} aria-hidden="true" />
+<span class="oi contents" data-glyph={name} title={name} aria-hidden="true" />
