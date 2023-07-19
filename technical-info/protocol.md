@@ -29,11 +29,11 @@ Multiple formats are supported for both requests and responses. Each server MUST
 
 The Client MUST set the Content-Type header to the appropriate type specified for the format it is sending data in. If the server does not recognize the Content-Type, it MUST reject the request with 400 Bad Request with no content. The server MAY accept additional content types than are specified here, but SHOULD NOT accept content types that are not specified by this or a future version of this specification. 
 
-The client SHOULD set the Accept header to the apprpriate type (or types) it requests the server to accept. If it does not set this header than the server MAY respond in any format specified here, but SHOULD respond in the Content-Type given by the server. If multiple formats are set, the server MAY choose any content type from the list in any manner it chooses. If the server does not recognize a content type specified in the accept field it MUST ignore that content type, but if it does not recognize any content type specified, it MUST reject the request with 406 Not Acceptable with no content. The server MAY accept additional content types than are specified here, but SHOULD NOT accept content types that are not specified by this or a future version of this specification. 
+The client SHOULD set the Accept header to the appropriate type (or types) it requests the server to return. If it does not set this header than the server MAY respond in any format specified here, but SHOULD respond in the Content-Type given by the client. If multiple formats are set, the server MAY choose any content type from the list in any manner it chooses. If the server does not recognize a content type specified in the accept field it MUST ignore that content type, but if it does not recognize any content type specified, it MUST reject the request with 406 Not Acceptable with no content. The server MAY accept additional content types than are specified here, but SHOULD NOT accept content types that are not specified by this or a future version of this specification. 
 
 The content types specified for use with this protocol are as follows:
 1. application/x-bincode-object: An object specified in Bincode format, given by the appropriate Rust Structure for the request or response.
-2. application/json: An object specifed in json format, where structures are composed of objects where keys are field names and values are the value assigned, byte arrays/vectors are composed of base64 encoded strings, and enums are encoded as the name of the enumerator. Complex enums are an object with a field called `t` giving the name of the enumerator, and the remaining fields are given by name. A lone field of a tuple variant is given with the field called `v`.
+2. application/json: An object specifed in json format, where structures are composed of objects where keys are field names and values are the value assigned, byte arrays/vectors are composed of base64 encoded strings, and enums are encoded as the name of the enumerator. Complex enums are an object with a field called `t` giving the name of the enumerator, and the remaining fields are given by name. A lone field of a tuple variant is given with the field called `v`. The `Option<T>` type is encoded as `T` precisely if the value is `Some` and the field is omitted if `None`.
 
 
 Base64 encoded values are encoded without padding, however server's MUST accept base64 encoding that includes tail padding, and such values MUST be treated identically to the version without padding.
@@ -60,7 +60,9 @@ pub enum ErrorCode{
     NoSuchUser,
     RateLimitExceeded(u32),
     InvalidSession,
-    AuthenticatonFailure
+    AuthenticatonFailure,
+    NoSuchObject,
+    AccessViolation,
 }
 ```
 
@@ -122,9 +124,23 @@ The `PublicKeyType` enum describes the type of a public (or private) key. Presen
 
 ```rust
 pub enum HashType{
+    Sha1,
     Sha256,
     Sha3_256
 }
 ```
 
 The `HashType` enum describes the type
+
+### Duration and Timestamp keys
+
+`Duration` and `Timestamp` are encoded both as a `u64` directly, and are named as the following two newtypes:
+```rust
+pub struct Duration(u64);
+
+pub struct Timestamp(u64);
+```
+
+Both store seconds + miliseconds as a 54.10 Fixed Point integer, where the most significant 54 bits stores the seconds the `Duration` or `Timestamp` refers to, and the remaining 10 bits stores a value between 0 and 999 that is the milieconds of the timestamp.
+
+In the case of a `Timestamp`, the time represented is the time since the Unix Epoch, January 1st, 1970, at 00:00.000 GMT.
