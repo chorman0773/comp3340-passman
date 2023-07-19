@@ -1,3 +1,19 @@
 {
-    "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/*.d.ts": true,
+    "**/node_modules": true,
+    "**/.svelte-kit": true,
+    "**/build": true
+  },
+  "explorer.fileNesting.patterns": {
+    "+page.svelte": "+page.server.ts, +page.server.js",
+    "+layout.svelte": "+layout.ts, +layout.js"
+  }
 }
