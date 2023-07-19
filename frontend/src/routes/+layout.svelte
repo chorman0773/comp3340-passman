@@ -2,4 +2,6 @@
   import "../app.css";
 </script>
 
-<slot />
+<div id="root" class="noscript-hidden min-h-screen bg-page-background">
+  <slot />
+</div>
