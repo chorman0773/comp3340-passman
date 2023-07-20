@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" context="module">
   /**
    * You may find the following code useful if the union needs regenerating:
    * function main() {
@@ -14,8 +14,7 @@
    *
    *  main();
    */
-
-  export let name:
+  export type OpenIconicIconName =
     | "account-login"
     | "account-logout"
     | "action-redo"
@@ -241,4 +240,14 @@
     | "zoom-out";
 </script>
 
-<span class="oi contents" data-glyph={name} title={name} aria-hidden="true" />
+<script lang="ts">
+  export let name: OpenIconicIconName;
+</script>
+
+<!-- Default classes: {w,h}-4 to match text size, and fill-current to match text color. Overridable. -->
+<svg
+  viewBox="0 0 8 8"
+  class={`h-4 w-4 fill-current ${$$props.class ?? ""}`.trimEnd()}
+>
+  <use xlink:href={`#${name}`} />
+</svg>

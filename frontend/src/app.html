@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width" />
 
     <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
-    <link rel="stylesheet" href="%sveltekit.assets%/open-iconic/css/open-iconic.min.css" />
+    <link rel="stylesheet" href="%sveltekit.assets%/open-iconic/font/css/open-iconic.min.css" />
+
+    <script src="%sveltekit.assets%/svginjector/svg-injector.min.js"></script>
 
     %sveltekit.head%
   </head>
@@ -17,6 +19,13 @@
     </noscript>
 
     <div style="display: contents">%sveltekit.body%</div>
+
+    <!-- Open Iconic SVG Sprite injection -->
+    <img src="%sveltekit.assets%/open-iconic/sprite/open-iconic.svg" style="display: none;" class="ic-sprite" alt="" />
+    <script>
+      var mySVGsToInject = document.querySelectorAll('.ic-sprite');
+      SVGInjector(mySVGsToInject);
+    </script>
   </body>
 
 </html>

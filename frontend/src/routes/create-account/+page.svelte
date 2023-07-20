@@ -1,6 +1,6 @@
 <script lang="ts">
+  import SubmitButton from "../../components/Form/SubmitButton.svelte";
   import Logo from "../../components/Logo.svelte";
-  import OpenIconicIcon from "../../components/OpenIconicIcon.svelte";
   import TextInput from "../../components/TextInput.svelte";
 
   let email: string;
@@ -12,13 +12,6 @@
     if (authorized) {
       window.location.pathname = "/home";
     }
-  };
-
-  let formError = false;
-
-  const onError = async () => {
-    formError = true;
-    console.log("error!");
   };
 </script>
 
@@ -35,7 +28,7 @@
   </div>
 
   <form
-    id="signin-form"
+    id="create-account"
     class="flex flex-col gap-6 max-w-[50ch] w-full"
     on:submit|preventDefault={formSubmit}
   >
@@ -70,14 +63,7 @@
     />
   </form>
 
-  <button
-    type="submit"
-    form="signin-form"
-    class="bg-passman-blue shadow-sm rounded-xl px-6 py-3 mt-8 text-passman-white"
-  >
-    <OpenIconicIcon name="person" />
-    <span>Create Account</span>
-  </button>
+  <SubmitButton icon="person" label="Create Account" form="create-account" />
 
   <div class="text-sm text-dark-gray mt-2">
     <a href="/sign-in">
