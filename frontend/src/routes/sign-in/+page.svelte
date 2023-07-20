@@ -1,15 +1,15 @@
 <script lang="ts">
   import { lastUser } from "$lib/lastUserStore";
+  import SubmitButton from "../../components/Form/SubmitButton.svelte";
   import Logo from "../../components/Logo.svelte";
-  import OpenIconicIcon from "../../components/OpenIconicIcon.svelte";
   import TextInput from "../../components/TextInput.svelte";
   import type { PageData } from "./$types";
+
+  export let data: PageData;
 
   let email: string;
   let password: string;
   let secretKey: string;
-
-  export let data: PageData;
 
   let lastUserData = data.lastUserData;
   let changingUsers = false;
@@ -44,7 +44,7 @@
   </div>
 
   <form
-    id="signin-form"
+    id="signin"
     class="flex flex-col gap-6 max-w-[50ch] w-full"
     on:submit|preventDefault={formSubmit}
   >
@@ -89,14 +89,7 @@
     {/if}
   </form>
 
-  <button
-    type="submit"
-    form="signin-form"
-    class="bg-passman-blue shadow-sm rounded-xl px-6 py-3 mt-8 text-passman-white"
-  >
-    <OpenIconicIcon name="lock-unlocked" />
-    <span>Unlock</span>
-  </button>
+  <SubmitButton icon="lock-unlocked" label="Unlock" form="signin" />
 
   <div class="mt-2 text-sm text-dark-gray">
     {#if !returningUserSignin}
