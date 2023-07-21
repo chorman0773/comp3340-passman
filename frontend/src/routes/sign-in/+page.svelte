@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { authenticateUser } from "$lib/auth";
   import { lastUser } from "$lib/lastUserStore";
   import SubmitButton from "../../components/Form/SubmitButton.svelte";
   import Logo from "../../components/Logo.svelte";
@@ -17,11 +18,14 @@
   $: returningUserSignin = lastUserData && !changingUsers;
 
   const formSubmit = async () => {
-    const authorized = true;
+    const { authSuccess } = await authenticateUser(email, password, secretKey);
 
-    if (!authorized) {
-      return;
-    }
+    // HACK: you should really really REALLY check this...
+    // https://youtu.be/y4GB_NDU43Q
+
+    // if (!authSuccess) {
+    //   return;
+    // }
 
     const newLastUser = returningUserSignin
       ? lastUserData

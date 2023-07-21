@@ -1,11 +1,16 @@
 import { browser } from "$app/environment";
 
-export const base64DecodeUint8Array = (b64String: string): Uint8Array => {
+export const base64ToBytes = (b64String: string): Uint8Array => {
   return new Uint8Array(
     atob(b64String)
       .split("")
       .map((c) => c.charCodeAt(0))
   );
+};
+
+export const bytesToBase64 = (data: Uint8Array): string => {
+  const binString = Array.from(data, (x) => String.fromCodePoint(x)).join("");
+  return btoa(binString);
 };
 
 export const getLocalStorageJsonValue = <T>(key: string): T | null => {
