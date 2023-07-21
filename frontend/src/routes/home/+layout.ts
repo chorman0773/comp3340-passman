@@ -1,5 +1,5 @@
 import { FieldType, type Vault } from "$lib/types";
-import type { PageLoad } from "./$types";
+import type { LayoutLoad } from "./$types";
 
 // disable SSR
 export const ssr = false;
@@ -17,15 +17,18 @@ export interface UserItemSummary {
 }
 
 interface PageLoadData {
+  currentVault?: string;
   vaults: Vault[];
 }
 
-export const load = ((): PageLoadData => {
+export const load = (({ params }): PageLoadData => {
   return {
+    currentVault: params.vault,
     vaults: [
       {
         uuid: "1",
         name: "Personal Vault",
+        description: "A personal vault, just for you!",
         items: [
           {
             uuid: "2",
@@ -61,11 +64,12 @@ export const load = ((): PageLoadData => {
         ],
       },
       {
-        uuid: "1",
+        uuid: "3",
         name: "Vaulty McVault Face",
+        description: "If you know, you know.",
         items: [
           {
-            uuid: "2",
+            uuid: "4",
             name: "1Password",
             summaryText: "user@example.com",
             fields: [
@@ -98,11 +102,13 @@ export const load = ((): PageLoadData => {
         ],
       },
       {
-        uuid: "1",
+        uuid: "5",
         name: "University of Windsor",
+        description:
+          "Where lost students go to wander in the shadows of uncertainty and despair.",
         items: [
           {
-            uuid: "2",
+            uuid: "6",
             name: "1Password",
             summaryText: "user@example.com",
             fields: [
@@ -135,11 +141,12 @@ export const load = ((): PageLoadData => {
         ],
       },
       {
-        uuid: "1",
+        uuid: "7",
         name: "Purolator",
+        description: "My first coop <3",
         items: [
           {
-            uuid: "2",
+            uuid: "8",
             name: "1Password",
             summaryText: "user@example.com",
             fields: [
@@ -173,4 +180,4 @@ export const load = ((): PageLoadData => {
       },
     ],
   };
-}) satisfies PageLoad;
+}) satisfies LayoutLoad;

@@ -1,12 +1,17 @@
 <script lang="ts">
   export let dark: boolean | undefined = undefined;
+
+  let className: string = "w-56";
+  export { className as class };
+
+  export let id: string | undefined = undefined;
 </script>
 
 <svg
-  width="239"
-  height="52"
-  viewBox="0 0 239 52"
+  {id}
+  class={className}
   fill="none"
+  viewBox="0 0 239 52"
   aria-label="Passman logo"
 >
   <path

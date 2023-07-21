@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import SubmitButton from "../../components/Form/SubmitButton.svelte";
   import Logo from "../../components/Logo.svelte";
   import TextInput from "../../components/TextInput.svelte";
@@ -10,7 +11,7 @@
   const formSubmit = async () => {
     const authorized = true;
     if (authorized) {
-      window.location.pathname = "/home";
+      goto("/home");
     }
   };
 </script>

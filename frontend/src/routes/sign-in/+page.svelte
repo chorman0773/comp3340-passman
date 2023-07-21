@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { lastUser } from "$lib/lastUserStore";
   import SubmitButton from "../../components/Form/SubmitButton.svelte";
   import Logo from "../../components/Logo.svelte";
@@ -27,7 +28,7 @@
       : { email, secretKey };
 
     lastUser.set(newLastUser);
-    window.location.pathname = "/home";
+    goto("/home");
   };
 </script>
 

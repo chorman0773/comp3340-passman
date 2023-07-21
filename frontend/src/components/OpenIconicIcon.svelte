@@ -244,10 +244,9 @@
   export let name: OpenIconicIconName;
 </script>
 
-<!-- Default classes: {w,h}-4 to match text size, and fill-current to match text color. Overridable. -->
 <svg
   viewBox="0 0 8 8"
-  class={`h-4 w-4 fill-current ${$$props.class ?? ""}`.trimEnd()}
+  class={`h-[1em] w-[1em] fill-current ${$$props.class ?? ""}`.trimEnd()}
 >
   <use xlink:href={`#${name}`} />
 </svg>
