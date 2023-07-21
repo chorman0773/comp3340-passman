@@ -9,6 +9,7 @@ export interface StoredObject {
 
 export interface Vault extends StoredObject {
   name: string;
+  description: string;
   items: VaultItem[];
 }
 
