@@ -67,6 +67,14 @@ pub struct ActiveSessions {
     inner: tokio::sync::RwLock<HashMap<u64, SessionState>>,
 }
 
+impl ActiveSessions {
+    pub fn new() -> Self {
+        Self {
+            inner: tokio::sync::RwLock::new(HashMap::new()),
+        }
+    }
+}
+
 #[rocket::post("/get-challenge", data = "<body>")]
 pub async fn get_challenge(
     sessions: &State<ActiveSessions>,

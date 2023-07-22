@@ -6,10 +6,10 @@ mod auth;
 
 mod protocol;
 
-#[tokio::main]
+#[rocket::main]
 async fn main() {
     match real_main().await {
-        Ok(v) => match v {},
+        Ok(_) => (),
         Err(e) => {
             eprintln!("Fatal Error: {}", e);
             std::process::exit(1)
@@ -30,15 +30,19 @@ fn rocket_to_io_kind(e: &rocket::error::ErrorKind) -> ErrorKind {
     }
 }
 
-async fn real_main() -> Result<Infallible, std::io::Error> {
+async fn real_main() -> Result<(), std::io::Error> {
+    let gstate = auth::ActiveSessions::new();
     let server = rocket::build()
+        .manage(gstate)
         .mount(
             "/auth",
             rocket::routes![auth::get_auth_info, auth::get_challenge],
         )
         .ignite()
         .await
+        .map_err(|e| std::io::Error::new(rocket_to_io_kind(e.kind()), e))?
+        .launch()
+        .await
         .map_err(|e| std::io::Error::new(rocket_to_io_kind(e.kind()), e))?;
-
-    loop {}
+    Ok(())
 }

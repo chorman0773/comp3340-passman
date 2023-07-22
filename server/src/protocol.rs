@@ -237,7 +237,7 @@ impl core::fmt::Display for Uuid {
         let mut lobottom = self.lo & 0xFFFFFFFFFFFF;
 
         f.write_fmt(format_args!(
-            "{:x}-{:x}-{:x}-{:x}-{:x}",
+            "{:08x}-{:04x}-{:04x}-{:04x}-{:012x}",
             hitop, himid, hibottom, lotop, lobottom
         ))
     }
