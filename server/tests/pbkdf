@@ -1,0 +1,11 @@
+#!/bin/sh
+
+token=$(cat test.token | od -An -t x1 | tr -d "\n" | tr -d " ")
+
+
+for x in [0...1024] 
+do
+    token=$(echo -n "$1" | openssl dgst -sha256 -binary -hmac "${token}" | od -An -t x1 | tr -d "\n" | tr -d " ")
+done
+
+echo "${token}"
