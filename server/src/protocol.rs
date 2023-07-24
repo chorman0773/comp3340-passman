@@ -5,6 +5,7 @@ use std::{
 };
 
 use base64::Engine;
+use rocket::serde::json::Json;
 
 #[repr(transparent)]
 #[derive(bincode::Encode, Debug, Hash, PartialEq, Eq)]
@@ -216,7 +217,7 @@ impl<'de> serde::Deserialize<'de> for ByteVec {
 
         engine
             .decode_vec(st, &mut out)
-            .map_err(|e| <D::Error as serde::de::Error>::custom(e));
+            .map_err(|e| <D::Error as serde::de::Error>::custom(e))?;
 
         Ok(out)
     }
@@ -500,6 +501,39 @@ impl Duration {
     serde::Serialize,
     serde::Deserialize,
 )]
+pub struct HelloResponse {
+    pub magic: u64,
+    pub timestamp: Timestamp,
+    pub server_id: Uuid,
+}
+
+const MAGIC: u64 = 0x123456789AFBCDEF;
+
+const SERVER_ID: Uuid = Uuid::parse_uuid("e3916506-2a46-11ee-933d-325096b39f47");
+
+#[rocket::get("/hello")]
+pub fn hello() -> Json<HelloResponse> {
+    let timestamp = Timestamp::from_system(SystemTime::now());
+
+    Json(HelloResponse {
+        magic: MAGIC,
+        timestamp,
+        server_id: SERVER_ID,
+    })
+}
+
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    PartialEq,
+    Eq,
+    bincode::Encode,
+    bincode::Decode,
+    serde::Serialize,
+    serde::Deserialize,
+)]
 pub enum PublicKeyType {
     Ec25519,
     Rsa,
@@ -543,4 +577,20 @@ pub enum ErrorCode {
     AuthenticatonFailure,
     NoSuchObject,
     AccessViolation,
+}
+
+#[derive(
+    Clone,
+    Debug,
+    Hash,
+    PartialEq,
+    Eq,
+    bincode::Encode,
+    bincode::Decode,
+    serde::Serialize,
+    serde::Deserialize,
+)]
+pub struct Error {
+    pub code: ErrorCode,
+    pub text: String,
 }
