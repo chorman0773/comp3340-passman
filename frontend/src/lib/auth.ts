@@ -9,10 +9,10 @@ import type {
 } from "./types";
 import { base64ToBytes, bytesToBase64 } from "./utilities";
 import {
-  decryptKey,
+  decryptRSAKey,
   deriveAES256Key,
   generateSessionToken,
-  signValue,
+  signValueRSA,
 } from "./cryptography";
 import { base32Decode } from "@ctrl/ts-base32";
 
@@ -109,7 +109,7 @@ const authenticateUser = async (
     publicKey
   );
 
-  const privateKey = await decryptKey(
+  const privateKey = await decryptRSAKey(
     privateKeyEncryptionKey,
     base64ToBytes(authInfo.data.privkey),
     base64ToBytes(authInfo.data.cipheriv)
@@ -119,7 +119,7 @@ const authenticateUser = async (
 
   const token = base64ToBytes(challenge.data.token);
   const sessionToken = await generateSessionToken(token, publicKey);
-  const signedToken = await signValue(sessionToken, privateKey);
+  const signedToken = await signValueRSA(sessionToken, privateKey);
 
   const b64SessionToken = bytesToBase64(sessionToken);
   const b64PrivateKey = bytesToBase64(privateKey);

@@ -41,7 +41,7 @@ const deriveAES256Key = async (
   return token;
 };
 
-const decryptKey = async (
+const decryptRSAKey = async (
   encryptionKey: Uint8Array,
   data: Uint8Array,
   initializationVector: Uint8Array
@@ -92,9 +92,9 @@ const generateSessionToken = async (token: Uint8Array, pubkey: Uint8Array) => {
   return u8Buffer;
 };
 
-const signValue = async (value: Uint8Array, privateKey: Uint8Array) => {
+const signValueRSA = async (value: Uint8Array, privateKey: Uint8Array) => {
   const importedKey = await crypto.subtle.importKey(
-    "raw",
+    "pkcs8",
     privateKey,
     { name: CipherAlgorithmNames.rsaPkcs, hash: HashAlgorithmNames.sha256 },
     false,
@@ -110,4 +110,4 @@ const signValue = async (value: Uint8Array, privateKey: Uint8Array) => {
   return new Uint8Array(signedToken);
 };
 
-export { deriveAES256Key, decryptKey, generateSessionToken, signValue };
+export { deriveAES256Key, decryptRSAKey, generateSessionToken, signValueRSA };
