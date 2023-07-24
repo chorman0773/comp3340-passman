@@ -3,9 +3,10 @@
 token=$(cat test.token | od -An -t x1 | tr -d "\n" | tr -d " ")
 
 
-for x in [0...1024] 
+for x in $(seq 1 1024)	
 do
-    token=$(echo -n "$1" | openssl dgst -sha256 -binary -hmac "${token}" | od -An -t x1 | tr -d "\n" | tr -d " ")
+     
+    token=$(echo -n "$1" | openssl dgst -sha256 -binary -mac hmac -macopt "hexkey:$token" | od -An -t x1 | tr -d "\n" | tr -d " ")
 done
 
-echo "${token}"
+echo "$token"
