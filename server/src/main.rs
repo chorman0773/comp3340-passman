@@ -38,6 +38,7 @@ async fn real_main() -> Result<(), std::io::Error> {
             "/auth",
             rocket::routes![auth::get_auth_info, auth::get_challenge],
         )
+        .mount("/", rocket::routes![protocol::hello])
         .ignite()
         .await
         .map_err(|e| std::io::Error::new(rocket_to_io_kind(e.kind()), e))?

@@ -1,11 +1,13 @@
-use std::{collections::HashMap, convert::Infallible, hash::Hasher};
+use std::{borrow::Cow, collections::HashMap, convert::Infallible, hash::Hasher};
 
+use base64::Engine;
+use openssl::hash::MessageDigest;
 use rocket::{
     http::Status,
     outcome::IntoOutcome,
     request::{FromRequest, Outcome},
     serde::json::Json,
-    Either, State,
+    Either, Request, State,
 };
 use siphasher::sip::SipHasher24;
 
@@ -111,3 +113,79 @@ pub async fn get_challenge(
 pub struct Authorization {
     token: u64,
 }
+
+#[rocket::async_trait]
+impl<'re> rocket::request::FromRequest<'re> for Authorization {
+    type Error = Json<crate::protocol::Error>;
+
+    async fn from_request(request: &'re Request<'_>) -> Outcome<Authorization, Self::Error> {
+        let tok = match request
+            .headers()
+            .get_one("Authorization")
+            .and_then(|st| st.strip_prefix("Bearer "))
+        {
+            Some(tok) => tok,
+            None => {
+                return Outcome::Failure((
+                    Status::Forbidden,
+                    Json(crate::protocol::Error {
+                        code: ErrorCode::InvalidSession,
+                        text: format!("Please authenticate"),
+                    }),
+                ))
+            }
+        };
+
+        let mut bytes = [0u8; 8];
+
+        let tok = tok.trim_end_matches("=");
+
+        let engine = base64::prelude::BASE64_STANDARD_NO_PAD;
+
+        match engine.decode_slice(tok, &mut bytes) {
+            Ok(_) => Outcome::Success(Authorization {
+                token: u64::from_le_bytes(bytes),
+            }),
+            Err(_) => Outcome::Failure((
+                Status::Forbidden,
+                Json(crate::protocol::Error {
+                    code: ErrorCode::InvalidSession,
+                    text: format!("Failed to validate session"),
+                }),
+            )),
+        }
+    }
+}
+
+async fn get_key_for_session(
+    auth: Authorization,
+    active_sessions: &ActiveSessions,
+) -> Option<Cow<[u8]>> {
+    let uuid = active_sessions
+        .inner
+        .read()
+        .await
+        .get(&auth.token)?
+        .assoc_user;
+
+    if uuid == Uuid::nil() {
+        return Some(Cow::Borrowed(TEST_PUBKEY));
+    } else {
+        todo!()
+    }
+}
+
+// #[rocket::post("/challenge-response", data = "<body>")]
+// pub async fn challenge_response(
+//     auth: Authorization,
+//     active_sessions: &State<ActiveSessions>,
+//     body: Vec<u8>,
+// ) {
+//     let key = get_key_for_session(auth, active_sessions)
+//         .await
+//         .expect("No such user yet");
+
+//     let openssl_key = openssl::rsa::Rsa::public_key_from_der(&key).unwrap();
+
+//     let verifier = openssl::sign::Verifier::new(MessageDigest::sha256(), &openssl_key)?;
+// }
