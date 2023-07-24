@@ -1,7 +1,10 @@
 use std::{borrow::Cow, collections::HashMap, convert::Infallible, hash::Hasher};
 
 use base64::Engine;
-use openssl::hash::MessageDigest;
+use openssl::{
+    hash::MessageDigest,
+    pkey::{PKey, PKeyRef},
+};
 use rocket::{
     http::Status,
     outcome::IntoOutcome,
@@ -66,13 +69,13 @@ pub struct SessionState {
 }
 
 pub struct ActiveSessions {
-    inner: tokio::sync::RwLock<HashMap<u64, SessionState>>,
+    inner: std::sync::RwLock<HashMap<u64, SessionState>>,
 }
 
 impl ActiveSessions {
     pub fn new() -> Self {
         Self {
-            inner: tokio::sync::RwLock::new(HashMap::new()),
+            inner: std::sync::RwLock::new(HashMap::new()),
         }
     }
 }
@@ -99,7 +102,7 @@ pub async fn get_challenge(
 
     let token = hasher.finish();
 
-    let mut session = sessions.inner.write().await;
+    let mut session = sessions.inner.write().unwrap();
 
     session.insert(token, state);
 
@@ -157,35 +160,41 @@ impl<'re> rocket::request::FromRequest<'re> for Authorization {
     }
 }
 
-async fn get_key_for_session(
+fn get_key_for_session(
     auth: Authorization,
     active_sessions: &ActiveSessions,
-) -> Option<Cow<[u8]>> {
-    let uuid = active_sessions
-        .inner
-        .read()
-        .await
-        .get(&auth.token)?
-        .assoc_user;
+) -> Option<(Cow<[u8]>, ByteArray<32>)> {
+    let guard = active_sessions.inner.read().unwrap();
+    let session = guard.get(&auth.token)?;
+
+    let uuid = session.assoc_user;
+
+    let token = session.token;
 
     if uuid == Uuid::nil() {
-        return Some(Cow::Borrowed(TEST_PUBKEY));
+        return Some((Cow::Borrowed(TEST_PUBKEY), token));
     } else {
         todo!()
     }
 }
 
-// #[rocket::post("/challenge-response", data = "<body>")]
-// pub async fn challenge_response(
-//     auth: Authorization,
-//     active_sessions: &State<ActiveSessions>,
-//     body: Vec<u8>,
-// ) {
-//     let key = get_key_for_session(auth, active_sessions)
-//         .await
-//         .expect("No such user yet");
+#[rocket::post("/challenge-response", data = "<body>")]
+pub async fn challenge_response(
+    auth: Authorization,
+    active_sessions: &State<ActiveSessions>,
+    body: Vec<u8>,
+) {
+    let (key, token) = get_key_for_session(auth, active_sessions).expect("No such user yet");
 
-//     let openssl_key = openssl::rsa::Rsa::public_key_from_der(&key).unwrap();
+    let openssl_key = openssl::rsa::Rsa::public_key_from_der(&key).unwrap();
 
-//     let verifier = openssl::sign::Verifier::new(MessageDigest::sha256(), &openssl_key)?;
-// }
+    let key = PKey::from_rsa(openssl_key).unwrap();
+
+    let mut verifier = openssl::sign::Verifier::new(MessageDigest::sha256(), &key).unwrap();
+
+    if verifier.verify_oneshot(&body, &token).unwrap() {
+        ()
+    } else {
+        panic!("Auth failed")
+    }
+}
