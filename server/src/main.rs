@@ -21,15 +21,26 @@ impl Fairing for CORS {
         }
     }
 
-    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
-        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-        response.set_header(Header::new(
-            "Access-Control-Allow-Methods",
-            "POST, GET, PATCH, OPTIONS",
-        ));
-        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
-        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
+        let origin = request.headers().get_one("Origin");
+        if let Some(origin) = origin {
+            response.set_header(Header::new("Access-Control-Allow-Origin", origin));
+            response.set_header(Header::new(
+                "Access-Control-Allow-Methods",
+                "POST, GET, DELETE, OPTIONS",
+            ));
+            response.set_header(Header::new(
+                "Access-Control-Allow-Headers",
+                "Content-Type, Accept, Authorization",
+            ));
+            response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+        }
     }
+}
+
+#[rocket::options("/<_..>")]
+fn all_options() {
+    /* Intentionally left empty */
 }
 
 #[rocket::main]
@@ -69,6 +80,7 @@ async fn real_main() -> Result<(), std::io::Error> {
             ],
         )
         .mount("/", rocket::routes![protocol::hello])
+        .mount("/", rocket::routes![all_options])
         .attach(CORS)
         .ignite()
         .await
