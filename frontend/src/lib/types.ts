@@ -1,9 +1,3 @@
-export interface LastUser {
-  email: string;
-  secretKey: string; // TODO: this really needs to be encrypted
-}
-
-// Actual types:
 export type Uuid = string;
 export type Base64String = string;
 export type Base32String = string;

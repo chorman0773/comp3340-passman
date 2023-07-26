@@ -10,6 +10,7 @@ const HashAlgorithmNames = Object.freeze({
 const CipherAlgorithmNames = Object.freeze({
   aesGcm: "AES-GCM",
   rsaPkcs1v5: "RSASSA-PKCS1-v1_5",
+  rsaOeap: "RSA-OEAP",
   hmac: "HMAC",
   aesCbc: "AES-CBC",
 });
@@ -49,9 +50,9 @@ const deriveAES256Key = async (
   return token;
 };
 
-const decryptRSAKey = async (
+const decryptAES = async (
   encryptionKey: Uint8Array,
-  encryptedPrivateKey: Uint8Array,
+  encryptedData: Uint8Array,
   initializationVector: Uint8Array
 ): Promise<Uint8Array> => {
   const importedKey = await crypto.subtle.importKey(
@@ -68,7 +69,30 @@ const decryptRSAKey = async (
       iv: initializationVector,
     },
     importedKey,
-    encryptedPrivateKey
+    encryptedData
+  );
+
+  return new Uint8Array(decryptedValue);
+};
+
+const decryptRSA = async (
+  encryptionKey: Uint8Array,
+  encryptedData: Uint8Array
+): Promise<Uint8Array> => {
+  const importedKey = await crypto.subtle.importKey(
+    "pkcs8",
+    encryptionKey,
+    { name: CipherAlgorithmNames.rsaOeap },
+    false,
+    ["decrypt"]
+  );
+
+  const decryptedValue = await crypto.subtle.decrypt(
+    {
+      name: CipherAlgorithmNames.rsaOeap,
+    },
+    importedKey,
+    encryptedData
   );
 
   return new Uint8Array(decryptedValue);
@@ -118,4 +142,10 @@ const signValueRSA = async (value: Uint8Array, privateKey: Uint8Array) => {
   return new Uint8Array(signedToken);
 };
 
-export { deriveAES256Key, decryptRSAKey, generateSessionToken, signValueRSA };
+export {
+  deriveAES256Key,
+  decryptAES,
+  decryptRSA,
+  generateSessionToken,
+  signValueRSA,
+};

@@ -1,119 +1,42 @@
-import type { Uuid } from "./types";
+import type { Base64String, Uuid } from "./types";
+import { passmanAxios } from "./auth";
+import { base64ToBytes } from "./utilities";
+import { decryptAES, decryptRSA } from "./cryptography";
+import type { Vault, VaultItem } from "./stores";
 
-export interface StoredObject {
-  uuid: Uuid;
-}
+const getVaults = async (
+  userUuid: Uuid,
+  sessionToken: Base64String
+): Promise<Vault[]> => {
+  const response = await passmanAxios.get(`/users/${userUuid}/vaults`, {
+    headers: {
+      Authorization: "Bearer " + sessionToken,
+    },
+  });
 
-export interface Vault extends StoredObject {
-  name: string;
-  description: string;
-  items: VaultItem[];
-}
+  return response.data as Vault[];
+};
 
-export interface VaultItem extends StoredObject {
-  name: string;
-  summaryText: string;
-  website: string;
-  fields: {
-    username: string;
-    password: string;
-    website: string;
+const getVaultContents = async (
+  uuid: Uuid,
+  privKey: Base64String
+): Promise<VaultItem[] | undefined> => {
+  const pathStub = "/vaults/" + uuid;
+  const privKeyBytes = base64ToBytes(privKey);
+
+  const iv = (await passmanAxios.get(pathStub + "/iv")).data;
+  const key = (await passmanAxios.get(pathStub + "/key")).data;
+  const content = (await passmanAxios.get(pathStub + "/data")).data;
+
+  const vaultSecretKey = await decryptRSA(privKeyBytes, key);
+  const vaultContents = await decryptAES(vaultSecretKey, content, iv);
+
+  const vaultContentsStr = new TextDecoder().decode(vaultContents);
+  const { items } = JSON.parse(vaultContentsStr) as {
+    items: VaultItem[];
   };
-}
 
-const VAULTS_STUB: Vault[] = [
-  {
-    uuid: "1",
-    name: "Personal Vault",
-    description: "A personal vault, just for you!",
-    items: [
-      {
-        uuid: "7",
-        name: "1Password",
-        website: "https://1password.com",
-        summaryText: "user@example.com",
-        fields: {
-          username: "user@example.com",
-          password: "examplePassword",
-          website: "https://my.1password.ca",
-        },
-      },
-      {
-        uuid: "4",
-        name: "Figma",
-        website: "https://figma.com",
-        summaryText: "user@example.com",
-        fields: {
-          username: "user@example.com",
-          password: "examplePassword",
-          website: "https://my.1password.ca",
-        },
-      },
-    ],
-  },
-  {
-    uuid: "3",
-    name: "Vaulty McVault Face",
-    description: "If you know, you know.",
-    items: [
-      {
-        uuid: "4",
-        name: "Figma",
-        website: "https://figma.com",
-        summaryText: "user@example.com",
-        fields: {
-          username: "user@example.com",
-          password: "examplePassword",
-          website: "https://my.1password.ca",
-        },
-      },
-    ],
-  },
-  {
-    uuid: "5",
-    name: "University of Windsor",
-    description:
-      "Where lost students go to wander in the shadows of uncertainty and despair.",
-    items: [
-      {
-        uuid: "6",
-        name: "Brightspace",
-        website: "https://brightspace.uwindsor.ca",
-        summaryText: "user@example.com",
-        fields: {
-          username: "user@example.com",
-          password: "examplePassword",
-          website: "https://my.1password.ca",
-        },
-      },
-    ],
-  },
-  {
-    uuid: "7",
-    name: "Purolator",
-    description: "My first coop <3",
-    items: [
-      {
-        uuid: "8",
-        name: "1Password",
-        website: "https://my.1password.com",
-        summaryText: "user@example.com",
-        fields: {
-          username: "user@example.com",
-          password: "examplePassword",
-          website: "https://my.1password.ca",
-        },
-      },
-    ],
-  },
-];
-
-const getVaults = (): Vault[] => {
-  return VAULTS_STUB;
+  return items;
 };
 
-const getVault = (uuid: Uuid): Vault | undefined => {
-  return VAULTS_STUB.find((v) => v.uuid === uuid);
-};
-
-export { getVault, getVaults };
+export { getVaultContents, getVaults };

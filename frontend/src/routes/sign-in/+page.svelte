@@ -1,40 +1,38 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { authenticateUser, parseSecretKey } from "$lib/auth";
-  import { lastUser } from "$lib/lastUserStore";
+  import { lastUser } from "$lib/stores";
+  import { get } from "svelte/store";
   import SubmitButton from "../../components/Form/SubmitButton.svelte";
   import Logo from "../../components/Logo.svelte";
   import TextInput from "../../components/TextInput.svelte";
-  import type { PageData } from "./$types";
+  import { signonFormSubmit } from "./pageFunctions";
+  import { goto } from "$app/navigation";
 
-  export let data: PageData;
+  // Has this browser signed in before?
+  // If so, the secret key and email will exist in browser storage.
+  const lastUserData = get(lastUser);
+  let returningUser = lastUserData !== null;
 
-  let email: string;
-  let password: string;
-  let secretKey: string;
+  // Has authentication been tried and failed?
+  let authFailed = false;
 
-  let lastUserData = data.lastUserData;
-  let changingUsers = false;
-  $: returningUserSignin = lastUserData && !changingUsers;
+  const formSubmit = async function (submitEvent: SubmitEvent) {
+    authFailed = false;
 
-  const formSubmit = async () => {
-    const authEmail = email ?? lastUserData?.email;
-    const authSecretKey = secretKey ?? lastUserData?.secretKey;
-
-    const newLastUser = { email: authEmail, secretKey: authSecretKey };
-    lastUser.set(newLastUser);
-
-    const { authSuccess } = await authenticateUser(
-      authEmail,
-      password,
-      parseSecretKey(authSecretKey)
+    await signonFormSubmit(
+      submitEvent,
+      returningUser,
+      lastUserData,
+      authSuccess,
+      authFail
     );
+  };
 
-    if (authSuccess) {
-      goto("/home");
-    } else {
-      console.error("Incorrect credentials");
-    }
+  const authSuccess = () => {
+    goto("/home");
+  };
+
+  const authFail = () => {
+    authFailed = true;
   };
 </script>
 
@@ -55,7 +53,15 @@
     class="flex flex-col gap-6 max-w-[50ch] w-full"
     on:submit|preventDefault={formSubmit}
   >
-    {#if !returningUserSignin}
+    {#if authFailed}
+      <div
+        class="w-full bg-passman-red rounded-md p-4 py-2 text-passman-white font-medium"
+      >
+        <span>Invalid credentials. Please try again.</span>
+      </div>
+    {/if}
+
+    {#if !returningUser}
       <TextInput
         label="email"
         valueName="email"
@@ -63,27 +69,20 @@
         type="email"
         autocomplete="email"
         required
-        bind:value={email}
       />
-    {:else}
-      <div class="text-center text-dark-gray">
-        Signing in as
-        <span class="text-passman-black font-bold">{lastUserData?.email}</span>
-      </div>
     {/if}
 
     <TextInput
       label="password"
       valueName="password"
       type="password"
-      placeholder="at least 8 characters"
+      placeholder="at least 4 characters"
       autocomplete="current-password"
       required
       minlength={4}
-      bind:value={password}
     />
 
-    {#if !returningUserSignin}
+    {#if !returningUser}
       <TextInput
         label="secret key"
         valueName="secretKey"
@@ -91,7 +90,6 @@
         placeholder="PM-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
         autocomplete="off"
         required
-        bind:value={secretKey}
       />
     {/if}
   </form>
@@ -99,16 +97,18 @@
   <SubmitButton icon="lock-unlocked" label="Unlock" form="signin" />
 
   <div class="mt-2 text-sm text-dark-gray">
-    {#if !returningUserSignin}
+    {#if returningUser}
+      <button on:click={() => (returningUser = false)}>
+        Signing in as <span class="text-passman-black font-bold"
+          >{lastUserData?.email}</span
+        >. Not you?
+        <span class="text-passman-blue">Switch accounts.</span>
+      </button>
+    {:else}
       <a href="/create-account">
         No account?
         <span class="text-passman-blue">Create one!</span>
       </a>
-    {:else}
-      <button on:click={() => (changingUsers = true)}>
-        Not you?
-        <span class="text-passman-blue">Switch accounts.</span>
-      </button>
     {/if}
   </div>
 </div>
