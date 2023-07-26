@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import type { Vault } from "$lib/types";
   import Logo from "../../components/Logo.svelte";
   import OpenIconicIcon from "../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../components/SimpleButton.svelte";
@@ -31,7 +30,7 @@
   };
 </script>
 
-<div id="page-container" class="flex h-screen overflow-hidden">
+<div id="page-container" class="flex h-screen">
   <aside
     id={$$props.id ?? "sidebar"}
     class="h-full bg-passman-white shadow-md flex flex-col py-2 gap-1 items-stretch"
@@ -44,7 +43,7 @@
       id="vault-list-heading"
       class="flex flex-row items-center px-4 text-passman-black"
     >
-      <span class="text-xl leading-none font-bold">Vaults</span>
+      <span class="text-xl leading-none font-bold me-auto">Vaults</span>
       <SimpleButton title="Add Vault" iconName="plus" on:click={createVault} />
     </div>
 
@@ -53,7 +52,7 @@
       {#each data.vaults as vault}
         <button
           on:click={() => switchVault(vault.uuid)}
-          aria-current={vault.uuid === data?.currentVault}
+          aria-current={vault.uuid === data.currentVault?.uuid}
           class="grow mx-2 px-2 py-1 rounded-md hover:bg-hover-tint aria-[current=true]:bg-hover-tint"
         >
           <p class="text-left text-dark-gray font-medium">

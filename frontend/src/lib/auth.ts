@@ -1,5 +1,8 @@
-import { PUBLIC_PASSMAN_SERVER_BASE_URL } from "$env/static/public";
-import axios, { type AxiosResponse } from "axios";
+import {
+  PUBLIC_PASSMAN_SERVER_BASE_URL,
+  PUBLIC_PASSMAN_HAS_HTTPS,
+} from "$env/static/public";
+import axios, { HttpStatusCode, type AxiosResponse } from "axios";
 import type {
   Base32String,
   Base64String,
@@ -16,8 +19,10 @@ import {
 } from "./cryptography";
 import { base32Decode } from "@ctrl/ts-base32";
 
+const useHttps = PUBLIC_PASSMAN_HAS_HTTPS === "true";
 const passmanAxios = axios.create({
-  baseURL: "https://" + PUBLIC_PASSMAN_SERVER_BASE_URL,
+  baseURL: (useHttps ? "https://" : "http://") + PUBLIC_PASSMAN_SERVER_BASE_URL,
+
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -33,13 +38,22 @@ interface GetAuthInfoResponse {
   pubkeyty: PublicKeyType;
   pubkey: Base64String;
   privkey: Base64String;
-  cipheriv: Base64String;
+  iv: Base64String;
 }
 
-const getAuthInfo = async (
-  body: GetAuthInfoRequest
-): Promise<AxiosResponse<GetAuthInfoResponse, GetAuthInfoRequest>> => {
-  return passmanAxios.post<GetAuthInfoResponse>("/auth/get-auth-info", body);
+const getAuthInfo = async ({
+  emailAddress,
+}: GetAuthInfoRequest): Promise<
+  AxiosResponse<GetAuthInfoResponse, GetAuthInfoRequest>
+> => {
+  if (!emailAddress) {
+    console.log(emailAddress);
+    throw "Email Address must be provided";
+  }
+
+  return passmanAxios.post<GetAuthInfoResponse>("/auth/get-auth-info", {
+    email_addr: emailAddress,
+  });
 };
 
 // then decrypt privkey
@@ -66,10 +80,6 @@ const getAuthChallenge = async (
   );
 };
 
-// generate:
-// - sign the challenge token with private key (decrypted earlier)
-// - compute session token (token + pubkey???)
-
 const sendChallengeResponse = async (
   sessionToken: Base64String,
   signedToken: Uint8Array
@@ -85,7 +95,7 @@ const sendChallengeResponse = async (
     }
   );
 
-  return result.status == 204;
+  return result.status == 200;
 };
 
 interface AuthenticationResult {
@@ -100,27 +110,35 @@ const authenticateUser = async (
   secretKey: Base32String
 ): Promise<AuthenticationResult> => {
   const authInfo = await getAuthInfo({ emailAddress: email });
-  const publicKey = base64ToBytes(authInfo.data.pubkey);
-  const utf8Password = new TextEncoder().encode(password);
+  if (authInfo.status !== HttpStatusCode.Ok) {
+    throw "Unable to get auth info";
+  }
 
-  const privateKeyEncryptionKey = await deriveAES256Key(
-    utf8Password,
-    new Uint8Array(base32Decode(secretKey)),
-    publicKey
+  const publicKeyBytes = base64ToBytes(authInfo.data.pubkey);
+  const utf8PasswordBytes = new TextEncoder().encode(password);
+  const secretKeyBytes = new Uint8Array(base32Decode(secretKey));
+
+  const privateKeyAESEncryptionKey = await deriveAES256Key(
+    utf8PasswordBytes,
+    secretKeyBytes,
+    publicKeyBytes
   );
 
   const privateKey = await decryptRSAKey(
-    privateKeyEncryptionKey,
+    privateKeyAESEncryptionKey,
     base64ToBytes(authInfo.data.privkey),
-    base64ToBytes(authInfo.data.cipheriv)
+    base64ToBytes(authInfo.data.iv)
   );
 
   const challenge = await getAuthChallenge({ uuid: authInfo.data.uuid });
-
   const token = base64ToBytes(challenge.data.token);
-  const sessionToken = await generateSessionToken(token, publicKey);
-  const signedToken = await signValueRSA(sessionToken, privateKey);
 
+  const sessionToken = await generateSessionToken(token, publicKeyBytes);
+  console.log({ sessionToken: bytesToBase64(sessionToken) });
+
+  // UP TO HERE IS CORRECT. DEVIATION FROM HERE IS RESULT OF FUNCTIONS BELOW
+
+  const signedToken = await signValueRSA(sessionToken, privateKey);
   const b64SessionToken = bytesToBase64(sessionToken);
   const b64PrivateKey = bytesToBase64(privateKey);
 
@@ -136,4 +154,8 @@ const authenticateUser = async (
   };
 };
 
-export { passmanAxios, authenticateUser };
+const parseSecretKey = (secretKey: string) => {
+  return secretKey.slice(3).replaceAll("-", "");
+};
+
+export { passmanAxios, authenticateUser, parseSecretKey };
