@@ -1,8 +1,4 @@
-import {
-  PUBLIC_PASSMAN_SERVER_BASE_URL,
-  PUBLIC_PASSMAN_HAS_HTTPS,
-} from "$env/static/public";
-import axios, { HttpStatusCode, type AxiosResponse } from "axios";
+import { HttpStatusCode, type AxiosResponse } from "axios";
 import type {
   Base32String,
   Base64String,
@@ -12,22 +8,14 @@ import type {
 } from "./types";
 import { base64ToBytes, bytesToBase64 } from "./utilities";
 import {
-  decryptRSAKey,
+  decryptAES,
   deriveAES256Key,
   generateSessionToken,
   signValueRSA,
 } from "./cryptography";
 import { base32Decode } from "@ctrl/ts-base32";
-
-const useHttps = PUBLIC_PASSMAN_HAS_HTTPS === "true";
-const passmanAxios = axios.create({
-  baseURL: (useHttps ? "https://" : "http://") + PUBLIC_PASSMAN_SERVER_BASE_URL,
-
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
+import { passmanAxios } from "./axios";
+import type { AuthenticationResult } from "./stores";
 
 interface GetAuthInfoRequest {
   emailAddress: string;
@@ -98,12 +86,6 @@ const sendChallengeResponse = async (
   return result.status == 200;
 };
 
-interface AuthenticationResult {
-  authSuccess: boolean;
-  sessionToken?: Base64String;
-  privateKey?: Base64String;
-}
-
 const authenticateUser = async (
   email: string,
   password: string,
@@ -124,7 +106,7 @@ const authenticateUser = async (
     publicKeyBytes
   );
 
-  const privateKey = await decryptRSAKey(
+  const privateKey = await decryptAES(
     privateKeyAESEncryptionKey,
     base64ToBytes(authInfo.data.privkey),
     base64ToBytes(authInfo.data.iv)
@@ -147,15 +129,17 @@ const authenticateUser = async (
     signedToken
   );
 
-  return {
-    authSuccess: success,
+  const result = {
+    loggedIn: success,
     sessionToken: success ? b64SessionToken : undefined,
     privateKey: success ? b64PrivateKey : undefined,
   };
+
+  return result;
 };
 
 const parseSecretKey = (secretKey: string) => {
-  return secretKey.slice(3).replaceAll("-", "");
+  return secretKey.slice(2).replaceAll("-", "");
 };
 
 export { passmanAxios, authenticateUser, parseSecretKey };

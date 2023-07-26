@@ -13,7 +13,7 @@
     "**/build": true
   },
   "explorer.fileNesting.patterns": {
-    "+page.svelte": "+page.server.ts, +page.server.js",
-    "+layout.svelte": "+layout.ts, +layout.js"
+    // "+page.svelte": "+page.server.ts, +page.server.js",
+    // "+layout.svelte": "+layout.ts, +layout.js"
   }
 }

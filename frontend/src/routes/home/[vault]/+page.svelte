@@ -5,8 +5,10 @@
   import type { PageData } from "./$types";
 
   export let data: PageData;
-
   type GroupedVaultItems = { [keyof: string]: VaultItem[] };
+
+  console.log(data);
+
   $: itemGroups = ((items: VaultItem[]): GroupedVaultItems => {
     const result: GroupedVaultItems = {};
 

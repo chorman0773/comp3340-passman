@@ -1,5 +1,8 @@
-import { getVault, getVaults, type Vault } from "$lib/vaults";
+import { authData } from "$lib/auth";
+import { getVaultContents, getVaults, type Vault } from "$lib/vaults";
+import { get } from "svelte/store";
 import type { LayoutLoad } from "./$types";
+import { goto } from "$app/navigation";
 
 // disable SSR
 export const ssr = false;
@@ -21,9 +24,23 @@ interface PageLoadData {
   vaults: Vault[];
 }
 
-export const load = (({ params }): PageLoadData => {
+export const load = (async ({ params }): Promise<PageLoadData> => {
+  if (!params.vault) {
+    return {
+      vaults: getVaults(),
+    };
+  }
+
+  const authResult = get(authData);
+  if (!authResult || !authResult?.authSuccess) {
+    throw goto("/sign-in");
+  }
+
+  console.log("Auth complete, loading data");
+
+  const vault = await getVaultContents(params.vault, authResult.privateKey!);
   return {
     vaults: getVaults(),
-    currentVault: params.vault ? getVault(params.vault) : undefined,
+    currentVault: vault,
   };
 }) satisfies LayoutLoad;
