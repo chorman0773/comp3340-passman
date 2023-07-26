@@ -1,46 +1,29 @@
-import { authData } from "$lib/auth";
-import { getVaultContents, getVaults, type Vault } from "$lib/vaults";
+import { authState } from "$lib/stores";
 import { get } from "svelte/store";
 import type { LayoutLoad } from "./$types";
 import { goto } from "$app/navigation";
+import { getVaults } from "$lib/vaults";
 
-// disable SSR
-export const ssr = false;
-
-export interface UserVault {
-  id: string;
-  key: string;
-  name: string;
-  itemSummaries: UserItemSummary[];
-}
-
-export interface UserItemSummary {
-  name: string;
-  username: string;
-}
-
-interface PageLoadData {
-  currentVault?: Vault;
-  vaults: Vault[];
-}
+interface PageLoadData {}
 
 export const load = (async ({ params }): Promise<PageLoadData> => {
-  if (!params.vault) {
-    return {
-      vaults: getVaults(),
-    };
+  // is the user signed in?
+  const currentAuthState = get(authState);
+
+  if (!currentAuthState.loggedIn) {
+    await goto("/sign-in");
+    throw "YOU SHALL NOT PASS! (User not signed in, sending to /sign-in)";
   }
 
-  const authResult = get(authData);
-  if (!authResult || !authResult?.authSuccess) {
-    throw goto("/sign-in");
-  }
+  console.log(currentAuthState);
+  const { userUuid, sessionToken } = currentAuthState;
+  console.log({
+    userUuid,
+    sessionToken,
+  });
 
-  console.log("Auth complete, loading data");
+  // load vaults
+  const vaults = await getVaults(userUuid!, sessionToken!);
 
-  const vault = await getVaultContents(params.vault, authResult.privateKey!);
-  return {
-    vaults: getVaults(),
-    currentVault: vault,
-  };
+  return {};
 }) satisfies LayoutLoad;

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { authState } from "$lib/stores";
   import Logo from "../../components/Logo.svelte";
   import OpenIconicIcon from "../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../components/SimpleButton.svelte";
@@ -25,7 +26,13 @@
   };
 
   const signout = () => {
-    console.log("Signout clicked");
+    authState.set({
+      loggedIn: false,
+      privateKey: undefined,
+      sessionToken: undefined,
+      userUuid: undefined,
+    });
+
     goto("/sign-in");
   };
 </script>

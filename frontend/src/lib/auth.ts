@@ -17,11 +17,7 @@ import { base32Decode } from "@ctrl/ts-base32";
 import { passmanAxios } from "./axios";
 import type { AuthenticationResult } from "./stores";
 
-interface GetAuthInfoRequest {
-  emailAddress: string;
-}
-
-interface GetAuthInfoResponse {
+interface AuthenticationInfo {
   uuid: Uuid;
   pubkeyty: PublicKeyType;
   pubkey: Base64String;
@@ -29,58 +25,53 @@ interface GetAuthInfoResponse {
   iv: Base64String;
 }
 
-const getAuthInfo = async ({
-  emailAddress,
-}: GetAuthInfoRequest): Promise<
-  AxiosResponse<GetAuthInfoResponse, GetAuthInfoRequest>
-> => {
-  if (!emailAddress) {
-    console.log(emailAddress);
-    throw "Email Address must be provided";
-  }
-
-  return passmanAxios.post<GetAuthInfoResponse>("/auth/get-auth-info", {
-    email_addr: emailAddress,
-  });
-};
-
-// then decrypt privkey
-// (using password + secret key + public key to generate AES256 key)
-
-interface GetAuthChallengeRequest {
-  uuid: Uuid;
-}
-
-interface GetAuthChallengeResponse {
+interface AuthenticationChallenge {
   sigHash: HashType;
   keyHash: HashType;
   token: Base64String;
 }
 
-const getAuthChallenge = async (
-  body: GetAuthChallengeRequest
-): Promise<
-  AxiosResponse<GetAuthChallengeResponse, GetAuthChallengeRequest>
-> => {
-  return passmanAxios.post<GetAuthChallengeResponse>(
-    "/auth/get-challenge",
-    body
+const getAuthInfo = async (email: string): Promise<AuthenticationInfo> => {
+  const response = await passmanAxios.post<AuthenticationInfo>(
+    "/auth/get-auth-info",
+    { email_addr: email }
   );
+
+  if (response.status !== HttpStatusCode.Ok) {
+    throw "Failed to get authentication information";
+  }
+
+  return response.data;
+};
+
+const getAuthChallenge = async (
+  uuid: Uuid
+): Promise<AuthenticationChallenge> => {
+  const response = await passmanAxios.post<AuthenticationChallenge>(
+    "/auth/get-challenge",
+    { uuid: uuid }
+  );
+
+  if (response.status != HttpStatusCode.Ok) {
+    throw "Failed to get authentication challenge";
+  }
+
+  return response.data;
 };
 
 const sendChallengeResponse = async (
   sessionToken: Base64String,
   signedToken: Uint8Array
 ): Promise<boolean> => {
+  const headers = {
+    "Content-Type": "application/octet-stream",
+    Authorization: "Bearer " + sessionToken,
+  };
+
   const result = await passmanAxios.post(
     "/auth/challenge-response",
     signedToken,
-    {
-      headers: {
-        "Content-Type": "application/octet-stream",
-        Authorization: "Bearer " + sessionToken,
-      },
-    }
+    { headers }
   );
 
   return result.status == 200;
@@ -91,12 +82,9 @@ const authenticateUser = async (
   password: string,
   secretKey: Base32String
 ): Promise<AuthenticationResult> => {
-  const authInfo = await getAuthInfo({ emailAddress: email });
-  if (authInfo.status !== HttpStatusCode.Ok) {
-    throw "Unable to get auth info";
-  }
+  const authInfo = await getAuthInfo(email);
 
-  const publicKeyBytes = base64ToBytes(authInfo.data.pubkey);
+  const publicKeyBytes = base64ToBytes(authInfo.pubkey);
   const utf8PasswordBytes = new TextEncoder().encode(password);
   const secretKeyBytes = new Uint8Array(base32Decode(secretKey));
 
@@ -108,29 +96,24 @@ const authenticateUser = async (
 
   const privateKey = await decryptAES(
     privateKeyAESEncryptionKey,
-    base64ToBytes(authInfo.data.privkey),
-    base64ToBytes(authInfo.data.iv)
+    base64ToBytes(authInfo.privkey),
+    base64ToBytes(authInfo.iv)
   );
 
-  const challenge = await getAuthChallenge({ uuid: authInfo.data.uuid });
-  const token = base64ToBytes(challenge.data.token);
+  const challenge = await getAuthChallenge(authInfo.uuid);
 
+  const token = base64ToBytes(challenge.token);
   const sessionToken = await generateSessionToken(token, publicKeyBytes);
-  console.log({ sessionToken: bytesToBase64(sessionToken) });
-
-  // UP TO HERE IS CORRECT. DEVIATION FROM HERE IS RESULT OF FUNCTIONS BELOW
 
   const signedToken = await signValueRSA(sessionToken, privateKey);
   const b64SessionToken = bytesToBase64(sessionToken);
   const b64PrivateKey = bytesToBase64(privateKey);
 
-  const success = await sendChallengeResponse(
-    bytesToBase64(sessionToken),
-    signedToken
-  );
+  const success = await sendChallengeResponse(b64SessionToken, signedToken);
 
-  const result = {
+  const result: AuthenticationResult = {
     loggedIn: success,
+    userUuid: success ? authInfo.uuid : undefined,
     sessionToken: success ? b64SessionToken : undefined,
     privateKey: success ? b64PrivateKey : undefined,
   };

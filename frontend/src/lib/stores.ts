@@ -1,10 +1,10 @@
 import { writable } from "svelte/store";
 import { persisted } from "svelte-local-storage-store";
 import type { Base64String, Uuid } from "./types";
-import { getLocalStorageJsonValue } from "./utilities";
 
 interface AuthenticationResult {
   loggedIn: boolean;
+  userUuid?: Uuid;
   sessionToken?: Base64String;
   privateKey?: Base64String;
 }

@@ -7,8 +7,6 @@
   export let data: PageData;
   type GroupedVaultItems = { [keyof: string]: VaultItem[] };
 
-  console.log(data);
-
   $: itemGroups = ((items: VaultItem[]): GroupedVaultItems => {
     const result: GroupedVaultItems = {};
 
@@ -39,12 +37,7 @@
       class="flex flex-row grow gap-3 mb-3 justify-content-start"
     >
       <h1 class="text-2xl font-bold">{data.currentVault?.name}</h1>
-      <SimpleButton
-        gray
-        iconName="pencil"
-        title="Edit Vault"
-        on:click={console.log}
-      />
+      <SimpleButton gray iconName="pencil" title="Edit Vault" />
     </div>
     <p class="text-dark-gray font-medium leading-normal line-clamp-3 h-[72px]">
       {data.currentVault?.description}

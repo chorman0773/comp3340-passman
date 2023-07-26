@@ -1,5 +1,6 @@
 import { authenticateUser, parseSecretKey } from "$lib/auth";
 import { authState, lastUser, type LastUser } from "$lib/stores";
+import { get } from "svelte/store";
 
 const signonFormSubmit = async (
   submitEvent: SubmitEvent,
@@ -38,15 +39,10 @@ const signonFormSubmit = async (
   }
 
   // Auth succeeded, cache credentials and store session details
+  authState.set(authResult);
   lastUser.set({
     email: email,
     secretKey: secret,
-  });
-
-  authState.set({
-    loggedIn: true,
-    privateKey: authResult.privateKey,
-    sessionToken: authResult.sessionToken,
   });
 
   onsuccess && onsuccess();
