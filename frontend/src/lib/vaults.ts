@@ -3,20 +3,26 @@ import { passmanAxios } from "./auth";
 import { base64ToBytes } from "./utilities";
 import { decryptAES, decryptRSA } from "./cryptography";
 import type { Vault, VaultItem } from "./stores";
+import { HttpStatusCode } from "axios";
 
 const getVaults = async (
   userUuid: Uuid,
   sessionToken: Base64String
 ): Promise<Vault[]> => {
-  const response = await passmanAxios.get(`/users/${userUuid}/vaults`, {
-    headers: {
-      Authorization: "Bearer " + sessionToken,
-    },
-  });
+  const headers = {
+    Authorization: "Bearer " + sessionToken,
+  };
 
-  console.log(response);
+  const response = await passmanAxios.get<Vault[]>(
+    `/users/${userUuid}/vaults`,
+    { headers }
+  );
 
-  return response.data as Vault[];
+  if (response.status !== HttpStatusCode.Ok) {
+    throw "Failed to fetch vaults";
+  }
+
+  return response.data;
 };
 
 const getVaultContents = async (
