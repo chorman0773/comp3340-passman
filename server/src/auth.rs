@@ -80,6 +80,12 @@ impl ActiveSessions {
     }
 }
 
+fn base64enc(x: &[u8]) -> String {
+    let engine = base64::prelude::BASE64_STANDARD_NO_PAD;
+
+    engine.encode(x)
+}
+
 #[rocket::post("/get-challenge", data = "<body>")]
 pub async fn get_challenge(
     sessions: &State<ActiveSessions>,
@@ -98,9 +104,16 @@ pub async fn get_challenge(
     let key = u128::from_le_bytes(lo) ^ u128::from_le_bytes(hi);
 
     let mut hasher = SipHasher24::new_with_keys(key as u64, (key >> 64) as u64);
+
     hasher.write(TEST_PUBKEY);
 
     let token = hasher.finish();
+
+    eprintln!(
+        "Session {}: {}",
+        base64enc(&token.to_le_bytes()),
+        base64enc(&state.token)
+    );
 
     let mut session = sessions.inner.write().unwrap();
 
@@ -139,15 +152,18 @@ impl<'re> rocket::request::FromRequest<'re> for Authorization {
             }
         };
 
-        let mut bytes = [0u8; 8];
+        let mut bytes = [0u8; 16];
 
         let tok = tok.trim_end_matches("=");
+        eprintln!("Got session token {}", tok);
 
         let engine = base64::prelude::BASE64_STANDARD_NO_PAD;
 
         match engine.decode_slice(tok, &mut bytes) {
             Ok(_) => Outcome::Success(Authorization {
-                token: u64::from_le_bytes(bytes),
+                token: u64::from_le_bytes(
+                    unsafe { core::mem::transmute::<_, [[u8; 8]; 2]>(bytes) }[0],
+                ),
             }),
             Err(_) => Outcome::Failure((
                 Status::Forbidden,
