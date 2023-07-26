@@ -6,6 +6,8 @@ mod auth;
 
 mod protocol;
 
+mod object;
+
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
 use rocket::{Request, Response};
@@ -81,6 +83,7 @@ async fn real_main() -> Result<(), std::io::Error> {
         )
         .mount("/", rocket::routes![protocol::hello])
         .mount("/", rocket::routes![all_options])
+        .mount("/vaults", rocket::routes![object::get_vault_content])
         .attach(CORS)
         .ignite()
         .await

@@ -5,7 +5,7 @@ use std::{
 };
 
 use base64::Engine;
-use rocket::serde::json::Json;
+use rocket::{request::FromParam, serde::json::Json};
 
 #[repr(transparent)]
 #[derive(bincode::Encode, Debug, Hash, PartialEq, Eq)]
@@ -231,16 +231,23 @@ pub struct Uuid {
 
 impl core::fmt::Display for Uuid {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        let mut hitop = self.hi >> 32;
-        let mut himid = (self.hi >> 16) & 0xFFFF;
-        let mut hibottom = self.hi & 0xFFFF;
-        let mut lotop = self.lo >> 48;
-        let mut lobottom = self.lo & 0xFFFFFFFFFFFF;
+        let hitop = self.hi >> 32;
+        let himid = (self.hi >> 16) & 0xFFFF;
+        let hibottom = self.hi & 0xFFFF;
+        let lotop = self.lo >> 48;
+        let lobottom = self.lo & 0xFFFFFFFFFFFF;
 
         f.write_fmt(format_args!(
             "{:08x}-{:04x}-{:04x}-{:04x}-{:012x}",
             hitop, himid, hibottom, lotop, lobottom
         ))
+    }
+}
+
+impl<'a> FromParam<'a> for Uuid {
+    type Error = TryParseUuidError;
+    fn from_param(param: &'a str) -> Result<Self, Self::Error> {
+        Self::try_parse_uuid(param)
     }
 }
 
