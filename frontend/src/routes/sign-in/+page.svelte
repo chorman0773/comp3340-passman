@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { authenticateUser } from "$lib/auth";
+  import { authenticateUser, parseSecretKey } from "$lib/auth";
   import { lastUser } from "$lib/lastUserStore";
   import SubmitButton from "../../components/Form/SubmitButton.svelte";
   import Logo from "../../components/Logo.svelte";
@@ -18,21 +18,23 @@
   $: returningUserSignin = lastUserData && !changingUsers;
 
   const formSubmit = async () => {
-    const { authSuccess } = await authenticateUser(email, password, secretKey);
+    const authEmail = email ?? lastUserData?.email;
+    const authSecretKey = secretKey ?? lastUserData?.secretKey;
 
-    // HACK: you should really really REALLY check this...
-    // https://youtu.be/y4GB_NDU43Q
-
-    // if (!authSuccess) {
-    //   return;
-    // }
-
-    const newLastUser = returningUserSignin
-      ? lastUserData
-      : { email, secretKey };
-
+    const newLastUser = { email: authEmail, secretKey: authSecretKey };
     lastUser.set(newLastUser);
-    goto("/home");
+
+    const { authSuccess } = await authenticateUser(
+      authEmail,
+      password,
+      parseSecretKey(authSecretKey)
+    );
+
+    if (authSuccess) {
+      goto("/home");
+    } else {
+      console.error("Incorrect credentials");
+    }
   };
 </script>
 
@@ -77,7 +79,7 @@
       placeholder="at least 8 characters"
       autocomplete="current-password"
       required
-      minlength={8}
+      minlength={4}
       bind:value={password}
     />
 

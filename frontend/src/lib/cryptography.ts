@@ -1,7 +1,4 @@
 import { SipHash } from "./siphash";
-import type { Base64String } from "./types";
-import { PublicKeyType } from "./types";
-import { base64ToBytes } from "./utilities";
 
 const HMAC_ROUNDS = 1024;
 const HashAlgorithmNames = Object.freeze({
@@ -12,16 +9,27 @@ const HashAlgorithmNames = Object.freeze({
 
 const CipherAlgorithmNames = Object.freeze({
   aesGcm: "AES-GCM",
-  rsaPkcs: "RSASSA-PKCS1-v1_5",
+  rsaPkcs1v5: "RSASSA-PKCS1-v1_5",
+  hmac: "HMAC",
+  aesCbc: "AES-CBC",
 });
 
-const hmac = async (algorithm: string, data: Uint8Array, token: Uint8Array) => {
-  const hashResult = await crypto.subtle.digest(algorithm, token);
-  const hashedToken = new Uint8Array(hashResult);
+const hmacSha256 = async (message: Uint8Array, key: Uint8Array) => {
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    key,
+    {
+      name: CipherAlgorithmNames.hmac,
+      hash: HashAlgorithmNames.sha256,
+    },
+    false,
+    ["sign"]
+  );
 
-  const result = await crypto.subtle.digest(
-    algorithm,
-    Uint8Array.from([...hashedToken, ...data])
+  const result = await crypto.subtle.sign(
+    CipherAlgorithmNames.hmac,
+    cryptoKey,
+    message
   );
 
   return new Uint8Array(result);
@@ -35,7 +43,7 @@ const deriveAES256Key = async (
   let token = Uint8Array.from([...publicKey, ...secretKey]);
 
   for (let i = 0; i < HMAC_ROUNDS; i++) {
-    token = await hmac(HashAlgorithmNames.sha256, password, token);
+    token = await hmacSha256(password, token);
   }
 
   return token;
@@ -43,24 +51,24 @@ const deriveAES256Key = async (
 
 const decryptRSAKey = async (
   encryptionKey: Uint8Array,
-  data: Uint8Array,
+  encryptedPrivateKey: Uint8Array,
   initializationVector: Uint8Array
 ): Promise<Uint8Array> => {
   const importedKey = await crypto.subtle.importKey(
     "raw",
     encryptionKey,
-    { name: CipherAlgorithmNames.aesGcm },
+    { name: CipherAlgorithmNames.aesCbc },
     false,
     ["decrypt"]
   );
 
   const decryptedValue = await crypto.subtle.decrypt(
     {
-      name: CipherAlgorithmNames.aesGcm,
+      name: CipherAlgorithmNames.aesCbc,
       iv: initializationVector,
     },
     importedKey,
-    data
+    encryptedPrivateKey
   );
 
   return new Uint8Array(decryptedValue);
@@ -86,8 +94,8 @@ const generateSessionToken = async (token: Uint8Array, pubkey: Uint8Array) => {
   const u8Buffer = new Uint8Array(8);
   const resultView = new DataView(u8Buffer.buffer);
 
-  resultView.setUint32(0, l);
-  resultView.setUint32(4, h);
+  resultView.setUint32(0, h, false);
+  resultView.setUint32(4, l, false);
 
   return u8Buffer;
 };
@@ -96,13 +104,13 @@ const signValueRSA = async (value: Uint8Array, privateKey: Uint8Array) => {
   const importedKey = await crypto.subtle.importKey(
     "pkcs8",
     privateKey,
-    { name: CipherAlgorithmNames.rsaPkcs, hash: HashAlgorithmNames.sha256 },
+    { name: CipherAlgorithmNames.rsaPkcs1v5, hash: HashAlgorithmNames.sha256 },
     false,
     ["sign"]
   );
 
   const signedToken = await crypto.subtle.sign(
-    { name: CipherAlgorithmNames.rsaPkcs, hash: HashAlgorithmNames.sha256 },
+    { name: CipherAlgorithmNames.rsaPkcs1v5, hash: HashAlgorithmNames.sha256 },
     importedKey,
     value
   );
