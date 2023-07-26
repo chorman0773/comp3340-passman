@@ -203,7 +203,7 @@ pub async fn challenge_response(
 ) {
     let (key, token) = get_key_for_session(auth, active_sessions).expect("No such user yet");
 
-    let openssl_key = openssl::rsa::Rsa::public_key_from_der(&key).unwrap();
+    let openssl_key = openssl::rsa::Rsa::public_key_from_der_pkcs1(&key).unwrap();
 
     let key = PKey::from_rsa(openssl_key).unwrap();
 
