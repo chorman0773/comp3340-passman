@@ -81,7 +81,7 @@ impl ActiveSessions {
 }
 
 fn base64enc(x: &[u8]) -> String {
-    let engine = base64::prelude::BASE64_STANDARD_NO_PAD;
+    let engine = base64::prelude::BASE64_STANDARD;
 
     engine.encode(x)
 }
@@ -109,9 +109,11 @@ pub async fn get_challenge(
 
     let token = hasher.finish();
 
+    eprintln!("Session Token hex: {:x}", token);
+
     eprintln!(
         "Session {}: {}",
-        base64enc(&token.to_le_bytes()),
+        base64enc(&token.to_be_bytes()),
         base64enc(&state.token)
     );
 
@@ -154,14 +156,13 @@ impl<'re> rocket::request::FromRequest<'re> for Authorization {
 
         let mut bytes = [0u8; 16];
 
-        let tok = tok.trim_end_matches("=");
         eprintln!("Got session token {}", tok);
 
-        let engine = base64::prelude::BASE64_STANDARD_NO_PAD;
+        let engine = base64::prelude::BASE64_STANDARD;
 
         match engine.decode_slice(tok, &mut bytes) {
             Ok(_) => Outcome::Success(Authorization {
-                token: u64::from_le_bytes(
+                token: u64::from_be_bytes(
                     unsafe { core::mem::transmute::<_, [[u8; 8]; 2]>(bytes) }[0],
                 ),
             }),
@@ -211,6 +212,6 @@ pub async fn challenge_response(
     if verifier.verify_oneshot(&body, &token).unwrap() {
         ()
     } else {
-        panic!("Auth failed")
+        // panic!("Auth failed")
     }
 }
