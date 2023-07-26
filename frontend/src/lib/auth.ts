@@ -15,7 +15,8 @@ import {
 } from "./cryptography";
 import { base32Decode } from "@ctrl/ts-base32";
 import { passmanAxios } from "./axios";
-import type { AuthenticationResult } from "./stores";
+import { authState, type AuthenticationResult } from "./stores";
+import { goto } from "$app/navigation";
 
 interface AuthenticationInfo {
   uuid: Uuid;
@@ -30,6 +31,10 @@ interface AuthenticationChallenge {
   keyHash: HashType;
   token: Base64String;
 }
+
+const parseSecretKey = (secretKey: string) => {
+  return secretKey.slice(2).replaceAll("-", "");
+};
 
 const getAuthInfo = async (email: string): Promise<AuthenticationInfo> => {
   const response = await passmanAxios.post<AuthenticationInfo>(
@@ -121,8 +126,14 @@ const authenticateUser = async (
   return result;
 };
 
-const parseSecretKey = (secretKey: string) => {
-  return secretKey.slice(2).replaceAll("-", "");
-};
+const signOut = () => {
+  authState.set({
+    loggedIn: false,
+    privateKey: undefined,
+    sessionToken: undefined,
+    userUuid: undefined,
+  });
 
-export { passmanAxios, authenticateUser, parseSecretKey };
+  goto("/sign-in");
+};
+export { passmanAxios, parseSecretKey, authenticateUser, signOut };

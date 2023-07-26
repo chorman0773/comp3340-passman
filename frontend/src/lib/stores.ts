@@ -9,31 +9,17 @@ interface AuthenticationResult {
   privateKey?: Base64String;
 }
 
-interface Vault {
-  name: string;
-  uuid: Uuid;
-}
-
-interface VaultItem {
-  uuid: Uuid;
-  name: string;
-  summaryText: string;
-  website: string;
-  fields: {
-    username: string;
-    password: string;
-    website: string;
-  };
-}
-
 export interface LastUser {
   email: string;
   secretKey: string; // TODO: this really needs to be encrypted
 }
 
 const lastUser = persisted<LastUser | null>("pm_lastUser", null);
-const authState = writable<AuthenticationResult>({ loggedIn: false });
-const vaults = writable<Vault[] | undefined>(undefined);
+const authState = persisted<AuthenticationResult>(
+  "pm_authState",
+  { loggedIn: false },
+  { storage: "session" }
+);
 
-export { lastUser, authState, vaults };
-export type { AuthenticationResult, Vault, VaultItem };
+export { lastUser, authState };
+export type { AuthenticationResult };
