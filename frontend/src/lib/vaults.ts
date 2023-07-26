@@ -14,6 +14,8 @@ const getVaults = async (
     },
   });
 
+  console.log(response);
+
   return response.data as Vault[];
 };
 
