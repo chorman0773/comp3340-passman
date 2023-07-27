@@ -1,6 +1,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { signOut } from "$lib/auth";
+  import { authState } from "$lib/stores";
+  import { get } from "svelte/store";
   import Logo from "../../components/Logo.svelte";
   import OpenIconicIcon from "../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../components/SimpleButton.svelte";
@@ -34,7 +36,7 @@
       {#each data.vaults as vault}
         <button
           on:click={() => switchVault(vault.uuid)}
-          aria-current={vault.uuid === data.currentVaultUuid}
+          aria-current={vault.uuid === data.currentVault?.uuid}
           class="grow mx-2 px-2 py-1 rounded-md hover:bg-hover-tint aria-[current=true]:bg-hover-tint"
         >
           <p class="text-left text-dark-gray font-medium">
@@ -47,7 +49,7 @@
     <!-- Footer -->
     <button
       class="mt-auto mx-2 text-passman-black hover:bg-hover-tint rounded-lg font-semibold px-4 py-2 flex flex-row items-center gap-2"
-      on:click={signOut}
+      on:click={() => signOut(get(authState).sessionToken)}
     >
       <OpenIconicIcon name="account-logout" />
       Sign Out

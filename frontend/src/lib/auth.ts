@@ -15,7 +15,7 @@ import {
 } from "./cryptography";
 import { base32Decode } from "@ctrl/ts-base32";
 import { passmanAxios } from "./axios";
-import { authState, type AuthenticationResult } from "./stores";
+import { type AuthenticationResult, authState } from "./stores";
 import { goto } from "$app/navigation";
 
 interface AuthenticationInfo {
@@ -126,7 +126,36 @@ const authenticateUser = async (
   return result;
 };
 
-const signOut = () => {
+const checkSession = async (sessionToken: Base64String) => {
+  const response = await passmanAxios.get("/auth/current-session", {
+    headers: {
+      Authorization: "Bearer" + sessionToken,
+    },
+  });
+
+  if (response.status === HttpStatusCode.Ok) {
+    return true;
+  }
+
+  // undefined is explicitly used here to prevent a request
+  // to delete the session (since we know its invalid already)
+  await signOut(undefined);
+};
+
+const signOut = async (sessionToken?: Base64String) => {
+  // TODO: for when {GET,DELETE} /auth/current-session exist
+  // if (sessionToken) {
+  //   try {
+  //     await passmanAxios.delete("/auth/current-session", {
+  //       headers: {
+  //         Authorization: "Bearer" + sessionToken,
+  //       },
+  //     });
+  //   } catch {
+  //     /* if this fails, who cares. Just let the session time out */
+  //   }
+  // }
+
   authState.set({
     loggedIn: false,
     privateKey: undefined,
@@ -134,6 +163,13 @@ const signOut = () => {
     userUuid: undefined,
   });
 
-  goto("/sign-in");
+  await goto("/sign-in");
 };
-export { passmanAxios, parseSecretKey, authenticateUser, signOut };
+
+export {
+  passmanAxios,
+  parseSecretKey,
+  authenticateUser,
+  checkSession,
+  signOut,
+};

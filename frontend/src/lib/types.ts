@@ -14,6 +14,7 @@ export enum HashType {
 
 export interface Vault {
   name: string;
+  description: string;
   uuid: Uuid;
 }
 

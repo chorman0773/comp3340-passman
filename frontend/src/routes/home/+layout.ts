@@ -3,32 +3,41 @@ import { get } from "svelte/store";
 import { goto } from "$app/navigation";
 import { getVaults } from "$lib/vaults";
 import type { LayoutLoad } from "./$types";
-import type { Uuid, Vault } from "$lib/types";
+import type { Vault } from "$lib/types";
 
-interface PageLoadData {
+const EMPTY_DATA = {
+  vaults: [],
+};
+
+interface LayoutLoadData {
   vaults: Vault[];
-  currentVaultUuid: Uuid | undefined;
+  currentVault?: Vault;
 }
 
-export const load = (async ({ params }): Promise<PageLoadData> => {
+export const load = (async ({ params }): Promise<LayoutLoadData> => {
   // is the user signed in?
   const currentAuthState = get(authState);
-
-  if (!currentAuthState.loggedIn) {
-    await goto("/sign-in");
-    throw "YOU SHALL NOT PASS! (User not signed in, sending to /sign-in)";
-  }
-
   const { userUuid, sessionToken } = currentAuthState;
-  if (!userUuid || !sessionToken) {
+
+  if (!currentAuthState.loggedIn || !userUuid || !sessionToken) {
     await goto("/sign-in");
-    throw "YOU SHALL NOT PASS! (Invalid auth state, sending to /sign-in)";
+    return EMPTY_DATA;
   }
+
+  // TODO: for when session timeout and {GET,DELETE} /auth/current-session exist
+  // await checkSession(sessionToken);
 
   // load vaults
   const vaults = await getVaults(userUuid, sessionToken);
+  const currentVault = vaults.find((v) => v.uuid === params.vault);
+
+  if (params.vault && !currentVault) {
+    await goto("/home");
+    return EMPTY_DATA;
+  }
+
   return {
     vaults: vaults,
-    currentVaultUuid: params.vault,
+    currentVault: currentVault,
   };
 }) satisfies LayoutLoad;
