@@ -1,29 +1,9 @@
 <script lang="ts">
-  import type { VaultItem } from "$lib/vaults";
   import OpenIconicIcon from "../../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../../components/SimpleButton.svelte";
   import type { PageData } from "./$types";
 
   export let data: PageData;
-  type GroupedVaultItems = { [keyof: string]: VaultItem[] };
-
-  $: itemGroups = ((items: VaultItem[]): GroupedVaultItems => {
-    const result: GroupedVaultItems = {};
-
-    for (const item of items) {
-      const index = item.name.charAt(0).toUpperCase();
-      result[index] ??= [];
-      result[index].push(item);
-    }
-
-    return result;
-  })(data.currentVault?.items ?? []);
-
-  let selectedItemUuid = "";
-
-  $: selectedItem = data.currentVault?.items.find(
-    (i) => i.uuid === selectedItemUuid
-  );
 </script>
 
 <svelte:head>
@@ -77,7 +57,7 @@
     </header>
 
     <div class="flex flex-row flex-grow min-h-0">
-      <aside
+      <!-- <aside
         class="h-full flex flex-col gap-0.5 overflow-auto p-2 border-r-[1px] border-r-light-gray min-w-fit"
       >
         {#each Object.entries(itemGroups) as [sharedPrefix, items]}
@@ -137,6 +117,7 @@
           </div>
         {/if}
       </main>
+    </div> -->
     </div>
   </main>
 </div>
