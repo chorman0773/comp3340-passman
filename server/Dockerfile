@@ -12,6 +12,7 @@ RUN "cargo" "build"
 
 COPY ./src ./src
 COPY ./tests ./tests
+COPY ./data ./data
 
 ENV ROCKET_ADDRESS "0.0.0.0"
 RUN "cargo" "build"
