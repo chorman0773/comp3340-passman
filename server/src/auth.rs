@@ -215,3 +215,38 @@ pub async fn challenge_response(
         // panic!("Auth failed")
     }
 }
+
+#[rocket::get("/current-session")]
+pub async fn current_session(
+    auth: Authorization,
+    active_sessions: &State<ActiveSessions>,
+) -> Status {
+    if active_sessions
+        .inner
+        .read()
+        .unwrap()
+        .contains_key(&auth.token)
+    {
+        Status::NoContent
+    } else {
+        Status::Forbidden
+    }
+}
+
+#[rocket::delete("/current-session")]
+pub async fn invalidate_session(
+    auth: Authorization,
+    active_sessions: &State<ActiveSessions>,
+) -> Status {
+    if active_sessions
+        .inner
+        .write()
+        .unwrap()
+        .remove(&auth.token)
+        .is_some()
+    {
+        Status::NoContent
+    } else {
+        Status::Forbidden
+    }
+}
