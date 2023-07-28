@@ -229,6 +229,31 @@ pub struct Uuid {
     hi: u64,
 }
 
+impl Uuid {
+    pub fn generate_v7_id() -> Uuid {
+        let ts = (SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64)
+            << 16;
+
+        let mut randbytes_lo = [0u8; 2];
+
+        let mut randbytes_hi = [0u8; 8];
+
+        openssl::rand::rand_bytes(&mut randbytes_lo).unwrap();
+        openssl::rand::rand_bytes(&mut randbytes_hi).unwrap();
+
+        let ver_and_randbytes = u16::from_le_bytes(randbytes_lo) & 0xFFF | 0x7000;
+        let var_and_randbytes = u64::from_le_bytes(randbytes_hi) & ((1 << 62) - 1) | 2 << 62;
+
+        Uuid {
+            lo: ts | (ver_and_randbytes as u64),
+            hi: var_and_randbytes,
+        }
+    }
+}
+
 impl core::fmt::Display for Uuid {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         let hitop = self.hi >> 32;
