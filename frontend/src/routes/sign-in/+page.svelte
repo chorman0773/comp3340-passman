@@ -10,7 +10,7 @@
   // Has this browser signed in before?
   // If so, the secret key and email will exist in browser storage.
   const lastUserData = get(lastUser);
-  let returningUser = lastUserData !== null;
+  let returningUser = !!lastUserData;
 
   // Has authentication been tried and failed?
   let authFailed = false;
