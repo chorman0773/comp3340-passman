@@ -3,6 +3,7 @@
   import OpenIconicIcon from "../../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../../components/SimpleButton.svelte";
   import type { PageData } from "./$types";
+  import VaultItemContents from "./VaultItemContents.svelte";
 
   export let data: PageData;
   const { currentVault, vaultContents } = data;
@@ -107,6 +108,17 @@
       {/each}
     </aside>
 
-    <main>Content</main>
+    <main class="p-4">
+      {#if !selectedItemUuid || !filteredItems.find((i) => i.uuid === selectedItemUuid)}
+        <div
+          class="flex flex-row items-center justify-center w-full h-full gap-4 text-3xl font-bold grow text-gray"
+        >
+          <OpenIconicIcon name="arrow-thick-left" />
+          <span> Select an item to view its contents. </span>
+        </div>
+      {:else}
+        <VaultItemContents item={selectedItem} />
+      {/if}
+    </main>
   </div>
 </div>
