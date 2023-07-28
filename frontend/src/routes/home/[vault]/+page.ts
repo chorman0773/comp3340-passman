@@ -35,6 +35,10 @@ export const load = (async ({ parent }): Promise<PageLoadData> => {
     throw e;
   }
 
+  console.log({
+    vaultContents,
+  });
+
   return {
     vaultContents,
   };

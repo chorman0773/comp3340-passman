@@ -36,6 +36,11 @@ export const load = (async ({ params }): Promise<LayoutLoadData> => {
     return EMPTY_DATA;
   }
 
+  console.log({
+    vaults: vaults,
+    currentVault: currentVault,
+  });
+
   return {
     vaults: vaults,
     currentVault: currentVault,

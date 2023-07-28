@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { VaultItem } from "$lib/types";
+  import OpenIconicIcon from "../../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../../components/SimpleButton.svelte";
 
   export let item: VaultItem;
 
-  const clipboardCopy = (value: string) => {
+  const clipboardCopy = (event: MouseEvent, value: string) => {
     navigator.clipboard.writeText(value);
   };
 </script>
@@ -16,7 +17,7 @@
     alt={`Favicon of ${item.website}`}
   />
 
-  <h1 class="text-xl font-bold text-passman-black">
+  <h1 class="text-xl font-bold truncate text-passman-black">
     {item.name}
   </h1>
 
@@ -35,10 +36,15 @@
 
       <!-- Copy button -->
       <button
-        class="text-left px-3 py-1.5 hidden border-l-[1px] rounded-r-md border-light-gray group-hover:block hover:bg-passman-blue hover:text-white"
-        on:click={() => clipboardCopy(value)}
+        class="text-left border-l-[1px] font-medium border-light-gray w-0 overflow-hidden group-hover:w-auto focus:w-auto group-hover:overflow-auto focus:overflow-auto"
+        on:click={(e) => clipboardCopy(e, value)}
       >
-        Copy
+        <span
+          class="flex flex-row items-center gap-2 font-medium hover:bg-passman-blue hover:text-white px-3 py-1.5 h-full rounded-r-md"
+        >
+          <OpenIconicIcon name="clipboard" />
+          Copy
+        </span>
       </button>
     </div>
   {/each}

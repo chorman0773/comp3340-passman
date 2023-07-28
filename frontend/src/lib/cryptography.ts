@@ -86,6 +86,31 @@ const decryptAES = async (
   return new Uint8Array(decryptedValue);
 };
 
+const encryptAES = async (
+  encryptionKey: Uint8Array,
+  rawData: Uint8Array,
+  initializationVector: Uint8Array
+): Promise<Uint8Array> => {
+  const importedKey = await crypto.subtle.importKey(
+    "raw",
+    encryptionKey,
+    { name: CipherAlgorithmNames.aesCbc },
+    false,
+    ["encrypt"]
+  );
+
+  const decryptedValue = await crypto.subtle.encrypt(
+    {
+      name: CipherAlgorithmNames.aesCbc,
+      iv: initializationVector,
+    },
+    importedKey,
+    rawData
+  );
+
+  return new Uint8Array(decryptedValue);
+};
+
 const decryptRSA = async (
   encryptionKey: Uint8Array,
   encryptedData: Uint8Array
@@ -157,6 +182,7 @@ export {
   hashSha256,
   deriveAES256Key,
   decryptAES,
+  encryptAES,
   decryptRSA,
   generateSessionToken,
   signValueRSA,
