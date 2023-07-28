@@ -36,6 +36,17 @@ const hmacSha256 = async (message: Uint8Array, key: Uint8Array) => {
   return new Uint8Array(result);
 };
 
+const hashSha256 = async (data: Uint8Array) => {
+  const result = await crypto.subtle.digest(
+    {
+      name: HashAlgorithmNames.sha256,
+    },
+    data
+  );
+
+  return new Uint8Array(result);
+};
+
 const deriveAES256Key = async (
   password: Uint8Array,
   secretKey: Uint8Array,
@@ -82,7 +93,7 @@ const decryptRSA = async (
   const importedKey = await crypto.subtle.importKey(
     "pkcs8",
     encryptionKey,
-    { name: CipherAlgorithmNames.rsaOeap },
+    { name: CipherAlgorithmNames.rsaOeap, hash: HashAlgorithmNames.sha256 },
     false,
     ["decrypt"]
   );
@@ -143,6 +154,7 @@ const signValueRSA = async (value: Uint8Array, privateKey: Uint8Array) => {
 };
 
 export {
+  hashSha256,
   deriveAES256Key,
   decryptAES,
   decryptRSA,
