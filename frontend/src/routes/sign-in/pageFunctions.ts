@@ -11,12 +11,17 @@ const signonFormSubmit = async (
 ) => {
   const formData = new FormData(submitEvent.target as HTMLFormElement);
 
-  const cachedOrForm = (cacheVal: string, formKey: string) => {
-    return isNewUser ? cacheVal : (formData.get(formKey) as string);
+  const cachedOrForm = (
+    accessor: (user: LastUser) => string,
+    formKey: string
+  ) => {
+    return isNewUser
+      ? accessor(cachedUser!)
+      : (formData.get(formKey) as string);
   };
 
-  const email = cachedOrForm(cachedUser!.email, "email");
-  const secret = cachedOrForm(cachedUser!.secretKey, "secretKey");
+  const email = cachedOrForm((u) => u.email, "email");
+  const secret = cachedOrForm((u) => u.secretKey, "secretKey");
   const password = formData.get("password") as string;
 
   let authResult = undefined;
