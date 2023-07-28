@@ -87,6 +87,7 @@ pub async fn create_vault(
 pub struct VaultInfo {
     name: String,
     uuid: Uuid,
+    description: String,
 }
 
 #[rocket::get("/<userid>/vaults")]
@@ -99,6 +100,7 @@ pub async fn list_vaults(
         Ok(Json(vec![VaultInfo {
             name: format!("Personal Vault"),
             uuid: Uuid::parse_uuid("99bd3e87-0bd2-48e3-a840-98aea0a1c07c"),
+            description: format!("A personal vault, just for you!"),
         }]))
     } else {
         Err(())
