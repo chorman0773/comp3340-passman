@@ -55,7 +55,7 @@
   >
     {#if authFailed}
       <div
-        class="w-full bg-passman-red rounded-md p-4 py-2 text-passman-white font-medium"
+        class="w-full p-4 py-2 font-medium rounded-md bg-passman-red text-passman-white"
       >
         <span>Invalid credentials. Please try again.</span>
       </div>
@@ -99,7 +99,7 @@
   <div class="mt-2 text-sm text-dark-gray">
     {#if returningUser}
       <button on:click={() => (returningUser = false)}>
-        Signing in as <span class="text-passman-black font-bold"
+        Signing in as <span class="font-bold text-passman-black"
           >{lastUserData?.email}</span
         >. Not you?
         <span class="text-passman-blue">Switch accounts.</span>
