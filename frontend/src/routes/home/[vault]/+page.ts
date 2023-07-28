@@ -23,17 +23,19 @@ export const load = (async ({ parent }): Promise<PageLoadData> => {
     return {} as unknown as PageLoadData;
   }
 
+  let vaultContents = undefined;
   try {
-    // We have a valid vault. Pwetty pwease Mw. Backend, couwwd i have the data? UwU
-    return {
-      vaultContents: await getVaultContents(
-        currentVault!.uuid,
-        sessionToken,
-        privateKey
-      ),
-    };
+    vaultContents = await getVaultContents(
+      currentVault!.uuid,
+      sessionToken,
+      privateKey
+    );
   } catch (e) {
     await goto("/home");
     throw e;
   }
+
+  return {
+    vaultContents,
+  };
 }) satisfies PageLoad;

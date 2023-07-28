@@ -1,8 +1,7 @@
 import type { Base64String, Uuid, Vault, VaultItem } from "./types";
 import { passmanAxios } from "./auth";
 import { base64ToBytes } from "./utilities";
-import { decryptAES, decryptRSA } from "./cryptography";
-import { AxiosHeaders, HttpStatusCode } from "axios";
+import { HttpStatusCode } from "axios";
 
 const getVaults = async (
   userUuid: Uuid,
@@ -36,18 +35,268 @@ const getVaultContents = async (
   const key = (await passmanAxios.get(`${path}/key`, { headers })).data;
   const content = (await passmanAxios.get(`${path}/data`, { headers })).data;
 
-  const vaultSecretKey = await decryptRSA(privKeyBytes, key);
-  console.log("Secret key OK");
+  const ivBytes = new TextEncoder().encode(iv);
+  const vaultKeyBytes = new TextEncoder().encode(key);
+  const contentBytes = new TextEncoder().encode(content);
 
-  const vaultContents = await decryptAES(vaultSecretKey, content, iv);
-  console.log("Contents OK");
+  // TODO; this fails for some reason
+  // const vaultSecretKey = await decryptRSA(privKeyBytes, vaultKeyBytes);
+  // console.log("Secret key OK");
 
-  const vaultContentsStr = new TextDecoder().decode(vaultContents);
-  const { items } = JSON.parse(vaultContentsStr) as {
-    items: VaultItem[];
-  };
+  // const vaultContents = await decryptAES(vaultSecretKey, contentBytes, ivBytes);
+  // console.log("Contents OK");
 
-  return items;
+  // const vaultContentsStr = new TextDecoder().decode(vaultContents);
+  // const { items } = JSON.parse(vaultContentsStr) as {
+  //   items: VaultItem[];
+  // };
+
+  // return items;
+
+  return [
+    {
+      uuid: "7",
+      name: "1Password",
+      website: "https://1password.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+    {
+      uuid: "4",
+      name: "Figma",
+      website: "https://figma.com",
+      summaryText: "user@example.com",
+      fields: {
+        username: "user@example.com",
+        password: "examplePassword",
+        website: "https://my.1password.ca",
+      },
+    },
+  ];
 };
 
 export { getVaultContents, getVaults };
