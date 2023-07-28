@@ -20,7 +20,7 @@
 </script>
 
 <label
-  class="bg-passman-white drop-shadow-md rounded-lg overflow-hidden
+  class="bg-passman-white drop-shadow-md rounded-md overflow-hidden
            flex flex-col px-3 py-1.5 mx-1
            focus-within:ring-2 ring-passman-blue"
 >
