@@ -45,7 +45,7 @@
   </header>
 
   <div
-    class=" min-h-0 bg-passman-white rounded-md shadow-md grid grid-rows-[auto_1fr] grid-cols-[auto_1fr]"
+    class="bg-passman-white rounded-md shadow-md min-h-0 grid grid-rows-[auto_1fr] grid-cols-[auto_1fr]"
   >
     <header class="border-b-light-gray border-b-[1px] flex flex-row col-span-2">
       <div
@@ -60,7 +60,7 @@
           type="text"
           name="search"
           id="itemSearch"
-          class="w-full py-2 font-medium bg-transparent rounded-tl-lg ps-8 placeholder:text-dark-gray placeholder:font-medium"
+          class="w-full h-full py-2 font-medium bg-transparent rounded-tl-md ps-8 placeholder:text-dark-gray placeholder:font-medium"
           placeholder={"Search in " + currentVault?.name}
           bind:value={itemFilter}
         />
@@ -70,7 +70,7 @@
         aria-label="Add Item"
         title="Add Item"
         on:click
-        class="hover:bg-hover-tint px-2 p-1.5 ms-auto rounded-tr-lg flex items-center gap-2 font-medium"
+        class="hover:bg-hover-tint px-2 p-1.5 ms-auto rounded-tr-md flex items-center gap-2 font-medium"
       >
         <OpenIconicIcon name="plus" />
         Add Item
@@ -78,14 +78,14 @@
     </header>
 
     <aside
-      class="h-full w-64 overflow-auto p-2 border-r-[1px] border-r-light-gray min-w-fit"
+      class="h-full w-56 overflow-y-auto overflow-x-hidden p-2 border-r-[1px] border-r-light-gray"
     >
       {#each Object.entries(filteredGroups) as [sharedPrefix, items]}
         <p class="px-2 font-bold text-gray">{sharedPrefix}</p>
 
         {#each items as item}
           <button
-            class="mb-1 rounded-lg p-2 flex flex-row gap-2.5 items-center hover:bg-hover-tint aria-[current=true]:bg-hover-tint"
+            class="mb-1 rounded-md p-2 flex w-full flex-row gap-2.5 items-center hover:bg-hover-tint aria-[current=true]:bg-hover-tint"
             aria-current={selectedItemUuid === item.uuid}
             on:click={() => (selectedItemUuid = item.uuid)}
           >
@@ -94,11 +94,11 @@
               class="rounded-md aspect-square h-7"
               alt={`Favicon of ${item.website}`}
             />
-            <div class="text-left">
-              <p class="-mb-1 font-semibold text-passman-black">
+            <div class="min-w-0 text-left">
+              <p class="-mb-1 font-semibold truncate text-passman-black">
                 {item.name}
               </p>
-              <p class="text-xs font-semibold text-gray">
+              <p class="text-xs font-semibold truncate text-gray">
                 {item.summaryText}
               </p>
             </div>
@@ -107,6 +107,6 @@
       {/each}
     </aside>
 
-    <main class="bg-passman-white" />
+    <main>Content</main>
   </div>
 </div>

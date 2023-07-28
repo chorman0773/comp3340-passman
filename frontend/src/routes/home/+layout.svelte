@@ -48,7 +48,7 @@
 
     <!-- Footer -->
     <button
-      class="flex flex-row items-center gap-2 px-4 py-2 mx-2 mt-auto font-semibold rounded-lg text-passman-black hover:bg-hover-tint"
+      class="flex flex-row items-center gap-2 px-4 py-2 mx-2 mt-auto font-semibold rounded-md text-passman-black hover:bg-hover-tint"
       on:click={() => signOut(get(authState).sessionToken)}
     >
       <OpenIconicIcon name="account-logout" />
