@@ -78,12 +78,21 @@ async fn real_main() -> Result<(), std::io::Error> {
             rocket::routes![
                 auth::get_auth_info,
                 auth::get_challenge,
-                auth::challenge_response
+                auth::challenge_response,
+                auth::current_session,
+                auth::invalidate_session
             ],
         )
         .mount("/", rocket::routes![protocol::hello])
         .mount("/", rocket::routes![all_options])
-        .mount("/vaults", rocket::routes![object::get_vault_content])
+        .mount(
+            "/vaults",
+            rocket::routes![
+                object::get_vault_content,
+                object::create_vault,
+                object::push_vault_content
+            ],
+        )
         .mount("/users", rocket::routes![object::list_vaults])
         .attach(CORS)
         .ignite()
