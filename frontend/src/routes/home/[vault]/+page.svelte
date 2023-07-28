@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { encryptAES } from "$lib/cryptography";
   import type { VaultItem } from "$lib/types";
   import OpenIconicIcon from "../../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../../components/SimpleButton.svelte";
@@ -81,8 +82,8 @@
     <aside
       class="h-full w-56 overflow-y-auto overflow-x-hidden p-2 border-r-[1px] border-r-light-gray"
     >
-      {#each Object.entries(filteredGroups) as [sharedPrefix, items]}
-        <p class="px-2 font-bold text-gray">{sharedPrefix}</p>
+      {#each Object.entries(filteredGroups).sort( (a, b) => a[0].localeCompare(b[0]) ) as [sharedPrefix, items]}
+        <p class="px-2 mt-2 font-bold text-gray">{sharedPrefix}</p>
 
         {#each items as item}
           <button

@@ -1,8 +1,9 @@
 import type { Base64String, Uuid, Vault, VaultItem } from "./types";
 import { passmanAxios } from "./auth";
-import { base64ToBytes } from "./utilities";
+import { base64ToBytes, bytesToBase64 } from "./utilities";
 import { HttpStatusCode, type AxiosRequestConfig } from "axios";
-import { decryptAES, hashSha256 } from "./cryptography";
+import { decryptAES, encryptAES, hashSha256 } from "./cryptography";
+import { browser } from "$app/environment";
 
 const getVaults = async (
   userUuid: Uuid,
@@ -47,6 +48,8 @@ const getVaultContents = async (
   const vaultContents = await decryptAES(vaultSecretKey, contents, ivBytes);
 
   const vaultContentsStr = new TextDecoder().decode(vaultContents);
+
+  console.log(JSON.parse(vaultContentsStr));
   const { items } = JSON.parse(vaultContentsStr) as {
     items: VaultItem[];
   };
@@ -67,7 +70,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -78,7 +81,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -89,7 +92,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -100,7 +103,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -111,7 +114,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -122,7 +125,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -133,7 +136,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -144,7 +147,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -155,7 +158,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -166,7 +169,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -177,7 +180,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -188,7 +191,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -199,7 +202,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -210,7 +213,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -221,7 +224,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -232,7 +235,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -243,7 +246,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -254,7 +257,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -265,7 +268,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -276,7 +279,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
@@ -287,7 +290,7 @@ const getVaultContents = async (
     },
     {
       uuid: crypto.randomUUID(),
-      name: "Figma" + crypto.randomUUID(),
+      name: crypto.randomUUID(),
       website: "https://figma.com",
       summaryText: "user@example.com",
       fields: {
