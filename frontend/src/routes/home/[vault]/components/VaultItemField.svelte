@@ -24,7 +24,7 @@
       {name}
     </span>
 
-    {#if masked}
+    {#if masked && !editMode}
       <input
         class="min-w-0 -mt-0.5 text-passman-black font-medium bg-transparent"
         type="password"
