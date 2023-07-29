@@ -3,10 +3,11 @@ import { authState } from "$lib/stores";
 import { getVaultContents } from "$lib/vaults";
 import { get } from "svelte/store";
 import type { PageLoad } from "./$types";
-import type { VaultItem } from "$lib/types";
+import type { Base64String, VaultItem } from "$lib/types";
 
 interface PageLoadData {
   vaultContents: VaultItem[];
+  vaultSecretKey: Base64String;
 }
 
 export const load = (async ({ parent }): Promise<PageLoadData> => {
@@ -36,6 +37,7 @@ export const load = (async ({ parent }): Promise<PageLoadData> => {
   }
 
   return {
-    vaultContents,
+    vaultContents: vaultContents.contents,
+    vaultSecretKey: vaultContents.secretKey,
   };
 }) satisfies PageLoad;
