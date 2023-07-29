@@ -1,14 +1,24 @@
 import type { Base64String, Uuid, Vault, VaultItem } from "./types";
 import { passmanAxios } from "./auth";
-import { base64ToBytes, bytesToBase64 } from "./utilities";
+import { base64ToBytes } from "./utilities";
 import { HttpStatusCode, type AxiosRequestConfig } from "axios";
-import { decryptAES, encryptAES, hashSha256 } from "./cryptography";
-import { browser } from "$app/environment";
+import { decryptAES, hashSha256 } from "./cryptography";
+import { PUBLIC_DISABLE_CRYPTO } from "$env/static/public";
 
 const getVaults = async (
   userUuid: Uuid,
   sessionToken: Base64String
 ): Promise<Vault[]> => {
+  if (PUBLIC_DISABLE_CRYPTO === "true") {
+    return [
+      {
+        name: "Personal Vault",
+        description: "A personal vault, just for you!",
+        uuid: "1",
+      },
+    ];
+  }
+
   const response = await passmanAxios.get<Vault[]>(
     `/users/${userUuid}/vaults`,
     { headers: { Authorization: "Bearer " + sessionToken } }
@@ -26,6 +36,33 @@ const getVaultContents = async (
   sessionToken: Base64String,
   privKey: Base64String
 ): Promise<VaultItem[]> => {
+  if (PUBLIC_DISABLE_CRYPTO === "true") {
+    return [
+      {
+        uuid: crypto.randomUUID(),
+        name: "1Password",
+        website: "https://1password.com",
+        summaryText: "user@example.com",
+        fields: {
+          username: "user@example.com",
+          password: "examplePassword" + crypto.randomUUID(),
+          website: "https://my.1password.ca",
+        },
+      },
+      {
+        uuid: crypto.randomUUID(),
+        name: crypto.randomUUID(),
+        website: "https://figma.com",
+        summaryText: "user@example.com",
+        fields: {
+          username: "user@example.com",
+          password: crypto.randomUUID(),
+          website: "https://figma.com",
+        },
+      },
+    ];
+  }
+
   const privKeyBytes = base64ToBytes(privKey);
 
   const axiosConfig: AxiosRequestConfig = {
@@ -48,258 +85,11 @@ const getVaultContents = async (
   const vaultContents = await decryptAES(vaultSecretKey, contents, ivBytes);
 
   const vaultContentsStr = new TextDecoder().decode(vaultContents);
-
-  console.log(JSON.parse(vaultContentsStr));
   const { items } = JSON.parse(vaultContentsStr) as {
     items: VaultItem[];
   };
 
-  // return items;
-
-  return [
-    {
-      uuid: crypto.randomUUID(),
-      name: "1Password",
-      website: "https://1password.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: "examplePassword",
-        website: "https://my.1password.ca",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-    {
-      uuid: crypto.randomUUID(),
-      name: crypto.randomUUID(),
-      website: "https://figma.com",
-      summaryText: "user@example.com",
-      fields: {
-        username: "user@example.com",
-        password: crypto.randomUUID(),
-        website: "https://figma.com",
-      },
-    },
-  ];
+  return items;
 };
 
 export { getVaultContents, getVaults };

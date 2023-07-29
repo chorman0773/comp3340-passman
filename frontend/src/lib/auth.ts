@@ -1,4 +1,4 @@
-import { HttpStatusCode, type AxiosResponse } from "axios";
+import { HttpStatusCode } from "axios";
 import type {
   Base32String,
   Base64String,
@@ -111,6 +111,7 @@ const authenticateUser = async (
   const sessionToken = await generateSessionToken(token, publicKeyBytes);
 
   const signedToken = await signValueRSA(sessionToken, privateKey);
+
   const b64SessionToken = bytesToBase64(sessionToken);
   const b64PrivateKey = bytesToBase64(privateKey);
 
@@ -133,13 +134,11 @@ const checkSession = async (sessionToken: Base64String) => {
     },
   });
 
-  if (response.status === HttpStatusCode.Ok) {
-    return true;
+  if (response.status !== HttpStatusCode.Ok) {
+    return false;
   }
 
-  // undefined is explicitly used here to prevent a request
-  // to delete the session (since we know its invalid already)
-  await signOut(undefined);
+  return true;
 };
 
 const signOut = async (sessionToken?: Base64String) => {

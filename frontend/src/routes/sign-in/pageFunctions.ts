@@ -31,8 +31,8 @@ const signonFormSubmit = async (
       password,
       parseSecretKey(secret)
     );
-  } catch {
-    console.error("Authentication failed due to cryptographic fault.");
+  } catch (e) {
+    console.error("Authentication failed due to cryptographic fault.", e);
     onerror && onerror();
     return;
   }

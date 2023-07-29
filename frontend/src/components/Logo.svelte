@@ -1,10 +1,10 @@
 <script lang="ts">
-  export let dark: boolean | undefined = undefined;
+  export let dark: boolean = false;
 
   let className: string = "w-56";
   export { className as class };
 
-  export let id: string | undefined = undefined;
+  export let id: string = "";
 </script>
 
 <svg

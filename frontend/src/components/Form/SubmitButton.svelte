@@ -10,7 +10,7 @@
 <button
   {form}
   type="submit"
-  class="text-passman-white bg-passman-blue shadow-sm rounded-md px-6 py-3 mt-8 flex flex-row gap-3 items-center"
+  class="flex flex-row items-center gap-3 px-6 py-3 rounded-md shadow-sm text-passman-white bg-passman-blue"
 >
   {#if icon}
     <OpenIconicIcon name={icon} />
