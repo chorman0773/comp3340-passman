@@ -2,13 +2,13 @@
   export let valueName: string;
   export let label: string;
 
-  export let autofocus: boolean | undefined = undefined;
+  export let autofocus: boolean = false;
   export let type: "text" | "email" | "password" = "text";
 
   export let minlength: number | undefined = undefined;
-  export let placeholder: string | undefined = undefined;
-  export let disabled: boolean | undefined = undefined;
-  export let required: boolean | undefined = undefined;
+  export let placeholder: string = "";
+  export let disabled: boolean = false;
+  export let required: boolean = false;
   export let autocomplete:
     | "email"
     | "current-password"
@@ -20,21 +20,19 @@
 </script>
 
 <label
-  class="bg-passman-white drop-shadow-md rounded-md overflow-hidden
-           flex flex-col px-3 py-1.5 mx-1
+  class="bg-passman-white rounded-md overflow-hidden
+           flex drop-shadow-md flex-col px-3 py-1.5 mx-1
            focus-within:ring-2 ring-passman-blue"
 >
-  <span class="text-dark-gray text-xs font-semibold lowercase">
+  <span class="text-xs font-semibold lowercase text-dark-gray">
     {label}
   </span>
 
   <input
     class="min-w-0 w-full -mt-0.5
-         text-passman-black font-medium
-           placeholder:text-light-gray
-           disabled:text-gray
+         text-passman-black font-medium border-b-[1px]
+           placeholder:text-light-gray border-b-light-gray
            bg-transparent
-           border-b-[1px] border-b-light-gray
            focus:outline-none focus:outline-0 focus:outline-transparent"
     name={valueName}
     bind:value

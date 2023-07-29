@@ -94,7 +94,9 @@
     {/if}
   </form>
 
-  <SubmitButton icon="lock-unlocked" label="Unlock" form="signin" />
+  <div class="mt-8">
+    <SubmitButton icon="lock-unlocked" label="Unlock" form="signin" />
+  </div>
 
   <div class="mt-2 text-sm text-dark-gray">
     {#if returningUser}

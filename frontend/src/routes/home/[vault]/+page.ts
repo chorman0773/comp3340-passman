@@ -13,8 +13,8 @@ export const load = (async ({ parent }): Promise<PageLoadData> => {
   // Before we await our parent's data, lets at least make sure we have the cred we need
   const { loggedIn, sessionToken, privateKey } = get(authState);
   if (!loggedIn || !privateKey || !sessionToken) {
-    await goto("/sign-in");
-    return {} as unknown as PageLoadData;
+    //   await goto("/sign-in");
+    //   return {} as unknown as PageLoadData;
   }
 
   const { currentVault } = await parent();
@@ -27,17 +27,13 @@ export const load = (async ({ parent }): Promise<PageLoadData> => {
   try {
     vaultContents = await getVaultContents(
       currentVault!.uuid,
-      sessionToken,
-      privateKey
+      sessionToken!,
+      privateKey!
     );
   } catch (e) {
     await goto("/home");
     throw e;
   }
-
-  console.log({
-    vaultContents,
-  });
 
   return {
     vaultContents,

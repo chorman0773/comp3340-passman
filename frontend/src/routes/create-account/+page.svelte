@@ -64,9 +64,11 @@
     />
   </form>
 
-  <SubmitButton icon="person" label="Create Account" form="create-account" />
+  <div class="mt-8">
+    <SubmitButton icon="person" label="Create Account" form="create-account" />
+  </div>
 
-  <div class="text-sm text-dark-gray mt-2">
+  <div class="mt-2 text-sm text-dark-gray">
     <a href="/sign-in">
       Have an account?
       <span class="text-passman-blue">Sign in.</span>

@@ -3,9 +3,9 @@
   import type { OpenIconicIconName } from "./OpenIconicIcon.svelte";
 
   export let title: string;
-  export let label: string | undefined = undefined;
+  export let label: string = "";
   export let iconName: OpenIconicIconName | undefined = undefined;
-  export let gray: boolean | undefined = undefined;
+  export let gray: boolean = false;
 </script>
 
 <button

@@ -15,31 +15,21 @@ interface LayoutLoadData {
 }
 
 export const load = (async ({ params }): Promise<LayoutLoadData> => {
-  // is the user signed in?
-  const currentAuthState = get(authState);
-  const { userUuid, sessionToken } = currentAuthState;
+  const { loggedIn, userUuid, sessionToken } = get(authState);
 
-  if (!currentAuthState.loggedIn || !userUuid || !sessionToken) {
-    await goto("/sign-in");
-    return EMPTY_DATA;
+  if (!loggedIn || !userUuid || !sessionToken) {
+    // await goto("/sign-in");
+    // return EMPTY_DATA;
   }
 
-  // TODO: for when session timeout and {GET,DELETE} /auth/current-session exist
-  // await checkSession(sessionToken);
-
   // load vaults
-  const vaults = await getVaults(userUuid, sessionToken);
+  const vaults = await getVaults(userUuid!, sessionToken!);
   const currentVault = vaults.find((v) => v.uuid === params.vault);
 
   if (params.vault && !currentVault) {
     await goto("/home");
     return EMPTY_DATA;
   }
-
-  console.log({
-    vaults: vaults,
-    currentVault: currentVault,
-  });
 
   return {
     vaults: vaults,
