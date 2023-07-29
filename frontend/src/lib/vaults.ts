@@ -1,8 +1,8 @@
 import type { Base64String, Uuid, Vault, VaultItem } from "./types";
 import { passmanAxios } from "./auth";
-import { base64ToBytes } from "./utilities";
+import { base64ToBytes, bytesToBase64 } from "./utilities";
 import { HttpStatusCode, type AxiosRequestConfig } from "axios";
-import { decryptAES, hashSha256 } from "./cryptography";
+import { decryptAES, encryptAES, hashSha256 } from "./cryptography";
 import { PUBLIC_DISABLE_CRYPTO } from "$env/static/public";
 
 const getVaults = async (
@@ -35,32 +35,35 @@ const getVaultContents = async (
   uuid: Uuid,
   sessionToken: Base64String,
   privKey: Base64String
-): Promise<VaultItem[]> => {
+): Promise<{ secretKey: Base64String; contents: VaultItem[] }> => {
   if (PUBLIC_DISABLE_CRYPTO === "true") {
-    return [
-      {
-        uuid: crypto.randomUUID(),
-        name: "1Password",
-        website: "https://1password.com",
-        summaryText: "user@example.com",
-        fields: {
-          username: "user@example.com",
-          password: "examplePassword" + crypto.randomUUID(),
-          website: "https://my.1password.ca",
+    return {
+      secretKey: "",
+      contents: [
+        {
+          uuid: crypto.randomUUID(),
+          name: "1Password",
+          website: "https://1password.com",
+          summaryText: "user@example.com",
+          fields: {
+            username: "user@example.com",
+            password: "examplePassword" + crypto.randomUUID(),
+            website: "https://my.1password.ca",
+          },
         },
-      },
-      {
-        uuid: crypto.randomUUID(),
-        name: crypto.randomUUID(),
-        website: "https://figma.com",
-        summaryText: "user@example.com",
-        fields: {
-          username: "user@example.com",
-          password: crypto.randomUUID(),
+        {
+          uuid: crypto.randomUUID(),
+          name: crypto.randomUUID(),
           website: "https://figma.com",
+          summaryText: "user@example.com",
+          fields: {
+            username: "user@example.com",
+            password: crypto.randomUUID(),
+            website: "https://figma.com",
+          },
         },
-      },
-    ];
+      ],
+    };
   }
 
   const privKeyBytes = base64ToBytes(privKey);
@@ -84,12 +87,50 @@ const getVaultContents = async (
   const vaultSecretKey = await decryptAES(privKeyHash, keyBytes, ivBytes);
   const vaultContents = await decryptAES(vaultSecretKey, contents, ivBytes);
 
-  const vaultContentsStr = new TextDecoder().decode(vaultContents);
-  const { items } = JSON.parse(vaultContentsStr) as {
-    items: VaultItem[];
+  const contentStr = new TextDecoder().decode(vaultContents);
+  return {
+    secretKey: bytesToBase64(vaultSecretKey),
+    contents: JSON.parse(contentStr),
   };
-
-  return items;
 };
 
-export { getVaultContents, getVaults };
+const setVaultContents = async (
+  vaultUuid: Uuid,
+  accountInfo: { sessionToken: Base64String; privateKey: Base64String },
+  vaultInfo: { secretKey: Base64String; newContents: VaultItem[] }
+) => {
+  // generate random bytes for new IV
+  const ivBytes = new Uint8Array(16);
+  crypto.getRandomValues(ivBytes);
+
+  const vaultSecretKeyBytes = base64ToBytes(vaultInfo.secretKey);
+  const encryptedContents = await encryptAES(
+    vaultSecretKeyBytes,
+    new TextEncoder().encode(JSON.stringify(vaultInfo.newContents)),
+    ivBytes
+  );
+
+  const privKeyHash = await hashSha256(base64ToBytes(accountInfo.privateKey));
+  const encVaultSecretKey = await encryptAES(
+    privKeyHash,
+    vaultSecretKeyBytes,
+    ivBytes
+  );
+
+  const path = "/vaults/" + vaultUuid;
+  const pushToServer = (path: string, bytes: Uint8Array) => {
+    return passmanAxios.post(path, bytes, {
+      headers: {
+        Authorization: "Bearer " + accountInfo.sessionToken,
+        "Content-Type": "application/octet-stream",
+      },
+    });
+  };
+
+  // Sure hope this works :ferrisclueless:
+  await pushToServer(path + "/data", encryptedContents);
+  await pushToServer(path + "/key", encVaultSecretKey);
+  await pushToServer(path + "/iv", ivBytes);
+};
+
+export { getVaultContents, setVaultContents, getVaults };

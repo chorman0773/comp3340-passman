@@ -1,15 +1,18 @@
 <script lang="ts">
   import type { VaultItem } from "$lib/types";
+  import { setVaultContents } from "$lib/vaults";
   import SubmitButton from "../../../components/Form/SubmitButton.svelte";
   import OpenIconicIcon from "../../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../../components/SimpleButton.svelte";
   import TextInput from "../../../components/TextInput.svelte";
   import type { PageData } from "./$types";
   import VaultItemContents from "./components/VaultItemContents.svelte";
-  import VaultItemField from "./components/VaultItemField.svelte";
+  import { authState } from "$lib/stores";
+  import { get } from "svelte/store";
 
   export let data: PageData;
-  let { currentVault, vaultContents } = data;
+  let { currentVault, vaultContents, vaultSecretKey } = data;
+  let { sessionToken, privateKey } = get(authState);
 
   let selectedItemUuid: string = "";
   $: selectedItem = vaultContents.find((i) => i.uuid === selectedItemUuid)!;
@@ -65,7 +68,7 @@
     createItem(data.get("itemName") as string);
   };
 
-  const saveUpdatedItem = (newItem: VaultItem) => {
+  const saveUpdatedItem = async (newItem: VaultItem) => {
     const itemIndex = vaultContents.findIndex((i) => i.uuid === newItem.uuid);
     if (itemIndex < 0) {
       console.error("Nonexistent item edited... hrm...");
@@ -76,6 +79,13 @@
     vaultContents[itemIndex] = newItem;
     newItem.summaryText = newItem.fields.username;
     newItem.website = newItem.fields.website;
+
+    // push data to server (TODO: make this block the user)
+    await setVaultContents(
+      currentVault!.uuid,
+      { sessionToken: sessionToken!, privateKey: privateKey! },
+      { secretKey: vaultSecretKey, newContents: vaultContents }
+    );
   };
 </script>
 
