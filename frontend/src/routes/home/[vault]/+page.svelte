@@ -39,12 +39,14 @@
 
   let editMode = false;
   let showNewItemOverlay = false;
+  let newItemName = "";
 
   const beginCreatingNewItem = () => {
     showNewItemOverlay = true;
+    newItemName = "";
   };
 
-  const endCreatingNewItem = async (save: boolean, itemName?: string) => {
+  const endCreatingNewItem = async (save: boolean) => {
     showNewItemOverlay = false;
 
     if (!save) {
@@ -54,7 +56,7 @@
     const uuid = crypto.randomUUID();
     const newItem: VaultItem = {
       uuid: uuid,
-      name: itemName!,
+      name: newItemName,
       summaryText: "",
       website: "",
       fields: {
@@ -77,8 +79,7 @@
   };
 
   const newItemSubmitAction = (e: SubmitEvent) => {
-    const data = new FormData(e.target as HTMLFormElement);
-    endCreatingNewItem(true, data.get("itemName") as string);
+    endCreatingNewItem(true);
   };
 
   const saveUpdatedItem = async (newItem: VaultItem) => {
@@ -135,6 +136,7 @@
           autofocus
           autocomplete="off"
           type="text"
+          bind:value={newItemName}
         />
       </label>
 
