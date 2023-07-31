@@ -102,7 +102,7 @@
 <div class="relative">
   {#if showNewItemOverlay}
     <div
-      class="absolute top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center w-full h-full bg-passman-black/50"
+      class="fixed top-0 bottom-0 left-0 right-0 z-50 flex items-center justify-center bg-passman-black/50"
     >
       <!-- TODO: make this pretty -->
       <div
