@@ -6,6 +6,7 @@
   export let label: string = "";
   export let iconName: OpenIconicIconName | undefined = undefined;
   export let gray: boolean = false;
+  export let iconAfter: boolean = false;
 </script>
 
 <button
@@ -15,11 +16,15 @@
   class="hover:bg-hover-tint p-1.5 rounded-md flex items-center gap-2 font-medium"
   class:text-gray={gray}
 >
-  {#if iconName}
+  {#if iconName && !iconAfter}
     <OpenIconicIcon name={iconName} />
   {/if}
 
   {#if label}
     {label}
+  {/if}
+
+  {#if iconName && iconAfter}
+    <OpenIconicIcon name={iconName} />
   {/if}
 </button>
