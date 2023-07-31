@@ -41,17 +41,21 @@
       />
     </div>
     <div class="border-2 rounded-md border-passman-white">
-      <SimpleButton
-        iconName="file"
+      <button
+        aria-label="Save"
         title="Save"
-        label="Save"
-        on:click={() => exitEditMode(true)}
-      />
+        form="editModeForm"
+        class="hover:bg-hover-tint p-1.5 rounded-md flex items-center gap-2 font-medium"
+        type="submit"
+      >
+        <OpenIconicIcon name="file" />
+        Save
+      </button>
     </div>
   </div>
 {/if}
 
-<div class="p-4">
+<form id="editModeForm" class="p-4" on:submit={() => exitEditMode(true)}>
   <div class="flex flex-row items-center gap-4 mb-16">
     {#if item.website}
       <img
@@ -68,6 +72,7 @@
         type="text"
         class="w-full h-12 min-w-0 text-xl font-bold bg-transparent border-2 rounded-md -ms-2 ps-2 border-light-gray shrink text-passman-black"
         bind:value={item.name}
+        required
       />
     {:else}
       <span class="text-lg font-bold text-passman-black">{item.name}</span>
@@ -109,9 +114,15 @@
 
     {#if !editMode && !Object.entries(item.fields).some(([ek, ev]) => !!ev)}
       <div class="flex items-center w-full text-gray">
-        <SimpleButton iconAfter iconName="pencil" title="Edit" label="Edit" />
+        <SimpleButton
+          iconAfter
+          iconName="pencil"
+          title="Edit"
+          label="Edit"
+          on:click={enterEditMode}
+        />
         <span class="ms-1">this item to start adding fields.</span>
       </div>
     {/if}
   </div>
-</div>
+</form>
