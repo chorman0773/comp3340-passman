@@ -9,6 +9,7 @@
   import VaultItemContents from "./components/VaultItemContents.svelte";
   import { authState } from "$lib/stores";
   import { get } from "svelte/store";
+  import Logo from "../../../components/Logo.svelte";
 
   export let data: PageData;
   let { currentVault, vaultContents, vaultSecretKey } = data;
@@ -43,7 +44,7 @@
     showNewItemOverlay = true;
   };
 
-  const createItem = (itemName: string) => {
+  const createItem = async (itemName: string) => {
     showNewItemOverlay = false;
 
     const newItem: VaultItem = {
@@ -60,7 +61,12 @@
 
     vaultContents.push(newItem);
     vaultContents = [...vaultContents]; // hack to force re-grouping
-    // TODO: implement real persistence
+
+    await setVaultContents(
+      currentVault!.uuid,
+      { sessionToken: sessionToken!, privateKey: privateKey! },
+      { secretKey: vaultSecretKey, newContents: vaultContents }
+    );
   };
 
   const newItemSubmitAction = (e: SubmitEvent) => {
@@ -184,11 +190,19 @@
               class:hover:bg-hover-tint={!editMode}
               disabled={editMode}
             >
-              <img
-                src={`https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,URL,SIZE&size=64&url=${item.website}`}
-                class="rounded-md aspect-square h-7"
-                alt={`Favicon of ${item.website}`}
-              />
+              {#if item.website}
+                <!-- TODO: we have no way to detect this failing, so we need a proper service for this. Also the 
+                           Passman Logo shouldn't be used as a placeholder when the icon doesn't exist. Instead 
+                           we should use an "initials" icon 
+                -->
+                <img
+                  src={`https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,URL,SIZE&size=64&url=${item.website}`}
+                  class="rounded-md aspect-square h-7"
+                  alt={`Favicon of ${item.website}`}
+                />
+              {:else}
+                <Logo short class="h-7" />
+              {/if}
               <div class="min-w-0 text-left">
                 <p class="-mb-1 font-semibold truncate text-passman-black">
                   {item.name}
