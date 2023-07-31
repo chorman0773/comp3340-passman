@@ -198,7 +198,7 @@
       {#each Object.entries(filteredGroups).sort( (a, b) => a[0].localeCompare(b[0]) ) as [sharedPrefix, items]}
         <p class="px-2 mt-2 font-bold text-gray">{sharedPrefix}</p>
 
-        {#each items as item}
+        {#each items.sort((a, b) => a.name.localeCompare(b.name)) as item}
           <button
             class="mb-1 rounded-md p-2 flex w-full flex-row gap-2.5 items-center aria-[current=true]:bg-hover-tint"
             aria-current={selectedItemUuid === item.uuid}
