@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { VaultItem } from "$lib/types";
+  import SubmitButton from "../../../../components/Form/SubmitButton.svelte";
+  import FullscreenModal from "../../../../components/FullscreenModal.svelte";
   import Logo from "../../../../components/Logo.svelte";
   import OpenIconicIcon from "../../../../components/OpenIconicIcon.svelte";
   import SimpleButton from "../../../../components/SimpleButton.svelte";
@@ -8,6 +10,7 @@
   export let item: VaultItem;
   export let editMode: boolean = false;
   export let onSaveItem: (newItem: VaultItem) => any;
+  export let onDeleteItem: () => any;
 
   let originalItem = JSON.parse(JSON.stringify(item));
 
@@ -25,7 +28,50 @@
       item = originalItem;
     }
   };
+
+  let showDeletingOverlay = false;
+  const beginDeletingItem = () => {
+    showDeletingOverlay = true;
+  };
+
+  const endDeletingItem = (confirmed: boolean) => {
+    showDeletingOverlay = false;
+
+    if (confirmed) {
+      onDeleteItem();
+    }
+  };
 </script>
+
+<FullscreenModal open={showDeletingOverlay}>
+  <div class="flex flex-col max-w-full gap-2 p-4 text-left">
+    <div class="flex flex-row w-full">
+      <h1 class="text-lg font-bold me-auto">
+        Are you sure you want to delete {item.name}?
+      </h1>
+      <SimpleButton
+        iconName="x"
+        title="Cancel creating item"
+        on:click={() => endDeletingItem(false)}
+      />
+    </div>
+
+    <p class="text-passman-black">
+      Please note that this action is
+      <span class="font-medium">IRREVERSIBLE</span>!
+    </p>
+
+    <div class="mx-auto mt-4 w-fit">
+      <button
+        on:click={() => endDeletingItem(true)}
+        class="flex flex-row items-center gap-3 px-6 py-3 rounded-md shadow-sm text-passman-white bg-passman-red"
+      >
+        <OpenIconicIcon name="trash" />
+        Confirm
+      </button>
+    </div>
+  </div>
+</FullscreenModal>
 
 {#if editMode}
   <div
@@ -81,6 +127,14 @@
           iconName="pencil"
           title={"Edit " + item.name}
           on:click={enterEditMode}
+        />
+      </span>
+
+      <span class="text-passman-red ms-auto">
+        <SimpleButton
+          iconName="trash"
+          title={"Delete " + item.name}
+          on:click={beginDeletingItem}
         />
       </span>
     {/if}

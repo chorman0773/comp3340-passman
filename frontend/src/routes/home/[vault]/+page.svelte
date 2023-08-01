@@ -101,6 +101,19 @@
       { secretKey: vaultSecretKey, newContents: vaultContents }
     );
   };
+
+  const deleteItem = async () => {
+    const index = vaultContents.findIndex((i) => i.uuid === selectedItemUuid);
+    vaultContents = vaultContents.filter((i) => i.uuid !== selectedItemUuid);
+    selectedItemUuid =
+      vaultContents.at(index % vaultContents.length)?.uuid ?? "";
+
+    await setVaultContents(
+      currentVault!.uuid,
+      { sessionToken: sessionToken!, privateKey: privateKey! },
+      { secretKey: vaultSecretKey, newContents: vaultContents }
+    );
+  };
 </script>
 
 <svelte:head>
@@ -130,8 +143,7 @@
 
         <!-- svelte-ignore a11y-autofocus -->
         <input
-          class="min-w-0 w-96 -mt-0.5 text-passman-black font-medium
-                   bg-transparent"
+          class="min-w-0 w-96 -mt-0.5 text-passman-black font-medium bg-transparent"
           name="itemName"
           autofocus
           autocomplete="off"
@@ -141,7 +153,7 @@
       </label>
 
       <div class="mt-4 ms-auto w-fit">
-        <SubmitButton icon="file" label="Save" form="newItemForm" />
+        <SubmitButton icon="plus" label="Create" form="newItemForm" />
       </div>
     </form>
   </div>
@@ -246,6 +258,7 @@
         <VaultItemContents
           item={JSON.parse(JSON.stringify(selectedItem))}
           onSaveItem={saveUpdatedItem}
+          onDeleteItem={deleteItem}
           bind:editMode
         />
       {/if}
