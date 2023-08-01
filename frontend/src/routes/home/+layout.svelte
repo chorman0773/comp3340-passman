@@ -10,8 +10,11 @@
 
   export let data: LayoutData;
 
+  const beginCreatingNewVault = () => {
+    console.log("beginCreatingNewVault: todo!");
+  };
+
   const switchVault = (uuid: string) => goto("/home/" + uuid);
-  const createVault = () => console.log("createVault: todo!");
 </script>
 
 <div id="page-container" class="flex flex-row h-screen max-h-screen">
@@ -28,7 +31,11 @@
       class="flex flex-row items-center px-4 text-passman-black"
     >
       <span class="text-xl font-bold leading-none me-auto">Vaults</span>
-      <SimpleButton title="Add Vault" iconName="plus" on:click={createVault} />
+      <SimpleButton
+        title="Add Vault"
+        iconName="plus"
+        on:click={beginCreatingNewVault}
+      />
     </div>
 
     <!-- Main contents -->

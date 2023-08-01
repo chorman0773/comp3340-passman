@@ -15,6 +15,7 @@
   on:click
   class="hover:bg-hover-tint p-1.5 rounded-md flex items-center gap-2 font-medium"
   class:text-gray={gray}
+  type="button"
 >
   {#if iconName && !iconAfter}
     <OpenIconicIcon name={iconName} />
