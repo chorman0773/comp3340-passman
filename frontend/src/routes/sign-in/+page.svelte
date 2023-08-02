@@ -45,7 +45,7 @@
   class="flex flex-col items-center justify-center h-screen"
 >
   <div id="logo-container" class="mb-14">
-    <Logo />
+    <Logo class="w-56"/>
   </div>
 
   <form
