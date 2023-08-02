@@ -80,12 +80,6 @@ impl ActiveSessions {
     }
 }
 
-fn base64enc(x: &[u8]) -> String {
-    let engine = base64::prelude::BASE64_STANDARD;
-
-    engine.encode(x)
-}
-
 #[rocket::post("/get-challenge", data = "<body>")]
 pub async fn get_challenge(
     sessions: &State<ActiveSessions>,
@@ -108,14 +102,6 @@ pub async fn get_challenge(
     hasher.write(TEST_PUBKEY);
 
     let token = hasher.finish();
-
-    eprintln!("Session Token hex: {:x}", token);
-
-    eprintln!(
-        "Session {}: {}",
-        base64enc(&token.to_be_bytes()),
-        base64enc(&state.token)
-    );
 
     let mut session = sessions.inner.write().unwrap();
 
@@ -155,8 +141,6 @@ impl<'re> rocket::request::FromRequest<'re> for Authorization {
         };
 
         let mut bytes = [0u8; 16];
-
-        eprintln!("Got session token {}", tok);
 
         let engine = base64::prelude::BASE64_STANDARD;
 
