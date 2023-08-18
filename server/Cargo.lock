@@ -1198,6 +1198,7 @@ dependencies = [
  "rocket",
  "rusqlite",
  "serde",
+ "serde_derive",
  "serde_json",
  "siphasher",
  "tokio",
