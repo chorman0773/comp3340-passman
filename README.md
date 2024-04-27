@@ -3,7 +3,7 @@
 
 This repository is the working tree of Connor Horman and Isaac Kilbourne's (Group 1) password manager for COMP 3340.
 
-Passman is an end-to-end encrypted password manager that uses zero-knowledge proofs and modern cryptography to ensure that a user - and only that user - is able to view their stored credentials. Nobody else, not even the servers that run Passman, are ever in possession of sufficient information to decrypt any user's data.
+Passman is an end-to-end encrypted password manager that uses zero-knowledge proofs and modern cryptography to ensure that a user - and only that user - is able to view their stored credentials. Nobody else, not even the servers that run Passman, is ever in possession of sufficient information to decrypt any user's data.
 
 The following are screenshots of Passman:
 
@@ -37,4 +37,4 @@ See [Critical Summary.md](./Critical%20Summary.md)
 
 ## Part 3 - Build It!
 
-Good news - you're in the right place :) This repo contains the complete source code for PassMan.
+Good news - you're in the right place :) This repo contains the complete source code for Passman.
